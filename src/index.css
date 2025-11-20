@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+.skyColor{
+  color: #4398d7;
+}
+.skyBackColor{
+  background-color: #4398d7;
+}

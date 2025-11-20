@@ -1,0 +1,34 @@
+import React from 'react'
+import cloudkeeper from '../../assets/Cloudkeeper_New.svg'
+import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
+function Login() {
+    const navigate = useNavigate();
+
+    const clickhandler = () => {
+        navigate("/dashboard");
+    }
+    return (
+        <div className='w-screen h-screen flex justify-center items-center'>
+
+            <div className='w-[471px] h-[500px]   '>
+                <div className='w-full flex justify-center items-center     '><img src={cloudkeeper} alt='Cloudkeeper' className='w-[210px] h-[46px]' /></div>
+                <form>
+                    <label htmlFor='email' className='block font-extralight text-[14px] mt-[25px]'>Email</label>
+                    <input className="email block w-full h-[43px] border border-slate-300 indent-3 mt-3.5 rounded-sm placeholder:text-[14px] placeholder:text-slate-400 " type='text' placeholder='Business email' />
+
+                    <label htmlFor='password ' className='block mt-8 font-medium text-slate-900 text-[14px]'>Password</label>
+                    <input className="password block w-full h-[43px] border  border-slate-300 indent-3 mt-3.5 rounded-sm placeholder:text-[14px] placeholder:text-slate-400 " type='password' placeholder='Password' />
+
+                    <div className='text-end mt-4'> <Link to={"#"} className='skyColor 
+                        text-[12px] font-semibold'>Forgot Password</Link></div>
+
+                    <button className="login w-full h-[45px]  skyBackColor text-white mt-9  rounded-lg text-[14px]" onClick={clickhandler}>LOGIN</button>
+                </form>
+            </div>
+        </div>
+    )
+}
+
+export default Login

@@ -9,7 +9,7 @@ function Dashboard() {
             <div  className=' h-18' ><NavBar/></div>
             <div className='flex w-full '>
                 <div className='w-[20%] h-[calc(100vh-72px)] border-r border-slate-300 '> <Sidebar/> </div>
-                <div className='w-[80%] h-[calc(100vh-72px)]  bg-slate-300'> <Outlet/></div>
+                <div className='w-[80%] h-[calc(100vh-72px)] bg-slate-200'> <Outlet/></div>
             </div>
 
         </div>

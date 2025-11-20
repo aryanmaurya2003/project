@@ -20,11 +20,11 @@ function App() {
     <Route path='/' element={<Login/>}/>
     <Route path='/dashboard' element={<Dashboard/>} >
 
-    <Route path='' element={<UserCreation/>} />
+    <Route path='addUser' element={<UserCreation/>} />
     <Route path='onboard' element={<Onboarding/>} />
     <Route path='aws' element={<AwsService/>} />
     <Route path='costExplorer' element={<CostExplorer/>} />
-    <Route path='user' element={<UserListing/>} />
+    <Route path='' element={<UserListing/>} />
     <Route path='editUser' element={<UserEdit/>} />
 
 

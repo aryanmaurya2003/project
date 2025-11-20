@@ -36,7 +36,7 @@ const SideElement = [{
 function Sidebar() {
 const [active,setActive]=useState(1);
 
-console.log("helo bhai isase",active)
+// console.log("helo bhai isase",active)
     return (
         <div className='h-full p-10  '>
             {SideElement.map((items) => (

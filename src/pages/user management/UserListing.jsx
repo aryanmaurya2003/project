@@ -11,13 +11,21 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from 'react-router-dom';
+import { IoIosAdd } from "react-icons/io";
+import { RxReset } from "react-icons/rx";
+import { CiFilter } from "react-icons/ci";
+import { RiExpandUpDownFill } from "react-icons/ri";
+
+
+
+
 
 
 const columns = [
-  { id: 'firstName', label: 'First Name', minWidth: 60 },
-  { id: 'lastName', label: 'Last Name', minWidth: 60 },
-  { id: 'email', label: 'Email', minWidth: 150 },
-  { id: 'roles', label: 'Role', minWidth: 60 },
+  { id: 'firstName', label: 'First Name', symbol: <div className='flex gap-2'><CiFilter className='scale-150' /><RiExpandUpDownFill /></div>, minWidth: 60 },
+  { id: 'lastName', label: 'Last Name', symbol: <div className='flex gap-2'><CiFilter className='scale-150' /><RiExpandUpDownFill /></div>, minWidth: 60 },
+  { id: 'email', label: 'Email', symbol: <div className='flex gap-2'><CiFilter className='scale-150' /><RiExpandUpDownFill /></div>, minWidth: 150 },
+  { id: 'roles', label: 'Role',symbol:<div className='flex gap-2'><CiFilter className='scale-150' /></div>, minWidth: 60 },
   { id: 'action', label: 'Action', minWidth: 120, align: 'center' },
 ];
 
@@ -49,9 +57,9 @@ const rows = [
 
 
 const roleColors = {
-  admin: "#d5edf7",
-  "read-only": "#fff9e6",
-  customer: "#eaffea",
+  admin: "#e8f9fa",
+  "read-only": "#f7f6ed",
+  customer: "white",
 };
 
 export default function UserListing() {
@@ -59,66 +67,81 @@ export default function UserListing() {
   const handleDelete = (row) => console.log("Delete:", row);
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", padding: 5 }}>
-      <TableContainer sx={{ minHeight: 880 }}>
-        <Table stickyHeader aria-label="sticky table">
+    <>
 
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth, fontWeight: "bold" }}
+      <Paper sx={{ width: "100%", overflow: "hidden", padding: 5 }}>
+        <div className='flex justify-between h-[45px] '>
+          <div className='flex  gap-2  '>
+            <div className='border text-white bg-black w-40  font-bold rounded-md '>
+              <Link to={"/dashboard/addUser"} className='w-full h-full   flex justify-center items-center gap-2'><IoIosAdd className='text-white font-extrabold scale-200' />Add New User</Link></div>
+            <div className="w-40 flex justify-center items-center gap-2 "> <RxReset className='mb-1' /> Reset Filter</div>
+          </div>
+          <div className='flex  gap-2  '>
+            <div className='border text-white bg-black w-35 flex justify-center items-center rounded-full font-bold'>Active(20)</div>
+            <div className="w-30 flex justify-center items-center"> All</div>
+          </div>
+        </div>
+        <TableContainer sx={{ minHeight: 880,marginTop:2 }}>
+          <Table stickyHeader aria-label="sticky table">
+
+            <TableHead sx={{backgroundColor:"violet"}}>
+              <TableRow >
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: column.minWidth, fontWeight: "bold",backgroundColor:"#fad9f9" }}
+                  >
+                    <div className=' flex items-center justify-between '>
+                      <div className=''>{column.label}</div>
+                      {column.symbol}
+                    </div>
+                  </TableCell>
+
+                ))}
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {rows.map((row, index) => (
+                <TableRow
+                  hover
+                  key={index}
+                  sx={{
+                    backgroundColor: roleColors[row.roles] || "white",
+                  }}
                 >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
+                  {columns.map((column) => {
+                    const value = row[column.id];
 
-          {/* BODY */}
-          <TableBody>
-            {rows.map((row, index) => (
-              <TableRow
-                hover
-                key={index}
-                sx={{
-                  backgroundColor: roleColors[row.roles] || "white",
-                }}
-              >
-                {columns.map((column) => {
-                  const value = row[column.id];
-                  console.log("hryl",column);
+                    if (column.id === "action") {
+                      return (
+                        <TableCell key={column.id} align="center">
 
-                  if (column.id === "action") {
+                          <Link to={"/dashboard/editUser"} state={{ row }}>
+                            <IconButton color="primary" onClick={() => handleEdit(row)}>
+                              <EditIcon />
+                            </IconButton></Link>
+
+                          <IconButton color="error" onClick={() => handleDelete(row)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      );
+                    }
+
                     return (
-                      <TableCell key={column.id} align="center">
-
-                       <Link to={"/dashboard/editUser"} state={{row}}>
-                        <IconButton color="primary" onClick={() => handleEdit(row)}>
-                          <EditIcon />
-                        </IconButton></Link>
-
-                        <IconButton color="error" onClick={() => handleDelete(row)}>
-                          <DeleteIcon />
-                        </IconButton>
+                      <TableCell key={column.id} align={column.align}>
+                        {value}
                       </TableCell>
                     );
-                  }
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
 
-                  return (
-                    <TableCell key={column.id} align={column.align}>
-                      {value}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableBody>
-
-        </Table>
-      </TableContainer>
-    </Paper>
+          </Table>
+        </TableContainer>
+      </Paper></>
   );
 }

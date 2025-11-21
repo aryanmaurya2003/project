@@ -57,8 +57,8 @@ const rows = [
 
 
 const roleColors = {
-  admin: "#e8f9fa",
-  "read-only": "#f7f6ed",
+  admin: "white",
+  "read-only": "white",
   customer: "white",
 };
 
@@ -69,7 +69,7 @@ export default function UserListing() {
   return (
     <>
 
-      <Paper sx={{ width: "100%", overflow: "hidden", padding: 5 }}>
+      <Paper sx={{ width: "100%", height:"100%",overflow: "scroll", padding: 5 }}>
         <div className='flex justify-between h-[45px] '>
           <div className='flex  gap-2  '>
             <div className='border text-white bg-black w-40  font-bold rounded-md '>
@@ -84,13 +84,13 @@ export default function UserListing() {
         <TableContainer sx={{ minHeight: 880,marginTop:2 }}>
           <Table stickyHeader aria-label="sticky table">
 
-            <TableHead sx={{backgroundColor:"violet"}}>
+            <TableHead sx={{backgroundColor:"#e8e7e3"}}>
               <TableRow >
                 {columns.map((column) => (
                   <TableCell
                     key={column.id}
                     align={column.align}
-                    style={{ minWidth: column.minWidth, fontWeight: "bold",backgroundColor:"#fad9f9" }}
+                    style={{ minWidth: column.minWidth, fontWeight: "bold",backgroundColor:"#e8e7e3" }}
                   >
                     <div className=' flex items-center justify-between '>
                       <div className=''>{column.label}</div>

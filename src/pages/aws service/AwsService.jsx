@@ -2,7 +2,7 @@ import React from 'react'
 
 function AwsService() {
   return (
-    <div>Aws ist the cloud platform</div>
+    <div className=' text-primary'>Aws ist wthe cloud platform</div>
   )
 }
 

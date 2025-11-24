@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@theme{
+
+  --color-primary:var(--color-blue-600);
+  --color-LinkColor:#4398d7;
+
+}
+
 .skyColor{
   color: #4398d7;
 }

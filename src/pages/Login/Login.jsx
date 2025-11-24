@@ -2,6 +2,7 @@ import React from 'react'
 import cloudkeeper from '../../assets/Cloudkeeper_New.svg'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
+import Footer from '../../commonComponent/Footer'
 
 function Login() {
     const navigate = useNavigate();
@@ -10,10 +11,11 @@ function Login() {
         navigate("/dashboard");
     }
     return (
-        <div className='w-screen h-screen flex justify-center items-center'>
+      <div className=' flex  flex-col justify-between'>
+          <div className='w-screen h-[calc(100vh-40px)] flex justify-center items-center'>
 
-            <div className='w-[471px] h-[500px]   '>
-                <div className='w-full flex justify-center items-center     '><img src={cloudkeeper} alt='Cloudkeeper' className='w-[210px] h-[46px]' /></div>
+            <div className='w-[471px] h-[500px] mt-9   '>
+                <div className='w-full flex justify-center items-center '><img src={cloudkeeper} alt='Cloudkeeper' className='w-[210px] h-[46px]' /></div>
                 <form>
                     <label htmlFor='email' className='block font-extralight text-[14px] mt-[25px]'>Email</label>
                     <input className="email block w-full h-[43px] border border-slate-300 indent-3 mt-3.5 rounded-sm placeholder:text-[14px] placeholder:text-slate-400 " type='text' placeholder='Business email' />
@@ -27,7 +29,11 @@ function Login() {
                     <button className="login w-full h-[45px]  skyBackColor text-white mt-9  rounded-lg text-[14px]" onClick={clickhandler}>LOGIN</button>
                 </form>
             </div>
+         
         </div>
+
+        <div><Footer left={`Have Question ? talk to our Team`} right="CloudKeeper 2025 | All right reserved"/></div>
+      </div>
     )
 }
 

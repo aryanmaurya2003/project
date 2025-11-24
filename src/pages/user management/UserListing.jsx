@@ -26,7 +26,7 @@ const columns = [
   { id: 'lastName', label: 'Last Name', symbol: <div className='flex gap-2'><CiFilter className='scale-150' /><RiExpandUpDownFill /></div>, minWidth: 60 },
   { id: 'email', label: 'Email', symbol: <div className='flex gap-2'><CiFilter className='scale-150' /><RiExpandUpDownFill /></div>, minWidth: 150 },
   { id: 'roles', label: 'Role',symbol:<div className='flex gap-2'><CiFilter className='scale-150' /></div>, minWidth: 60 },
-  { id: 'action', label: 'Action', minWidth: 120, align: 'center' },
+  { id: 'action', label: 'Action', minWidth: 60, align: 'center' },
 ];
 
 
@@ -69,19 +69,19 @@ export default function UserListing() {
   return (
     <>
 
-      <Paper sx={{ width: "100%", height:"100%",overflow: "scroll", padding: 5 }}>
+      <Paper sx={{ width: "100%", height:"100%",overflow: "scroll", padding: 5,overflowX: "hidden", overflowY: "auto" }}>
         <div className='flex justify-between h-[45px] '>
           <div className='flex  gap-2  '>
             <div className='border text-white bg-black w-40  font-bold rounded-md '>
-              <Link to={"/dashboard/addUser"} className='w-full h-full   flex justify-center items-center gap-2'><IoIosAdd className='text-white font-extrabold scale-200' />Add New User</Link></div>
-            <div className="w-40 flex justify-center items-center gap-2 "> <RxReset className='mb-1' /> Reset Filter</div>
+              <Link to={"/dashboard/user/addUser"} className='w-full h-full   flex justify-center items-center gap-2'><IoIosAdd className='text-white font-extrabold scale-200' />Add New User</Link></div>
+            {/* <div className="w-40 flex justify-center items-center gap-2 "> <RxReset className='mb-1' /> Reset Filter</div> */}
           </div>
-          <div className='flex  gap-2  '>
+          {/* <div className='flex  gap-2  '>
             <div className='border text-white bg-black w-35 flex justify-center items-center rounded-full font-bold'>Active(20)</div>
             <div className="w-30 flex justify-center items-center"> All</div>
-          </div>
+          </div> */}
         </div>
-        <TableContainer sx={{ minHeight: 880,marginTop:2 }}>
+        <TableContainer sx={{ minHeight: 880,marginTop:2,overflowX: "hidden", overflowY: "auto" }}>
           <Table stickyHeader aria-label="sticky table">
 
             <TableHead sx={{backgroundColor:"#e8e7e3"}}>
@@ -102,7 +102,7 @@ export default function UserListing() {
               </TableRow>
             </TableHead>
 
-            <TableBody>
+            <TableBody >
               {rows.map((row, index) => (
                 <TableRow
                   hover
@@ -118,7 +118,7 @@ export default function UserListing() {
                       return (
                         <TableCell key={column.id} align="center">
 
-                          <Link to={"/dashboard/editUser"} state={{ row }}>
+                          <Link to={"/dashboard/user/editUser"} state={{ row }}>
                             <IconButton color="primary" onClick={() => handleEdit(row)}>
                               <EditIcon />
                             </IconButton></Link>

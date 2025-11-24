@@ -6,7 +6,7 @@ import { LuUsers, LuInfo } from "react-icons/lu";
 import { VscSignOut } from "react-icons/vsc";
 import {Link} from 'react-router-dom'
 import { useDispatch } from 'react-redux';
-import { toggleChange } from '../pages/feature/toggle/toggleSlice';
+import { toggleChange } from '../feature/toggle/toggleSlice';
 
 function NavBar() {
     const dispatch=useDispatch();

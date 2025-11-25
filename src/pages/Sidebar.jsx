@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import { GrUserSettings } from "react-icons/gr";
 import { SiCompilerexplorer } from "react-icons/si";
 import { MdAccountBalance } from "react-icons/md";
@@ -9,25 +9,25 @@ import { useSelector } from "react-redux";
 
 const SideElement = [
   {
-    id: 1,
+    id: "user",
     name: "User",
     icon: <GrUserSettings className=" inline w-6 h-6 " />,
     link: "/dashboard/user",
   },
   {
-    id: 2,
+    id: "onboard",
     name: "Onboarding",
     icon: <MdAccountBalance className=" inline w-6 h-6 " />,
     link: "/dashboard/onboard",
   },
   {
-    id: 3,
+    id: "costExplorer",
     name: "Cost Explorer",
     icon: <SiCompilerexplorer className=" inline w-6 h-6 " />,
     link: "/dashboard/costExplorer",
   },
   {
-    id: 4,
+    id: "aws",
     name: "Aws Service",
     icon: <FaAws className=" inline w-6 h-6 " />,
     link: "/dashboard/aws",
@@ -35,10 +35,10 @@ const SideElement = [
 ];
 
 function Sidebar() {
-  const [active, setActive] = useState(1);
-  const [size, setSize] = useState({width: window.innerWidth,});
+
+  const path=useLocation().pathname.split('/')[2]
+  const [active, setActive] = useState(path);
   const isToggle = useSelector((state) => state.toggle.value);
-  console.log("data---", isToggle);
 
   return (
     <div className={` lg:w-full h-full ${!isToggle ? "p-10" : "pt-10"} `}>

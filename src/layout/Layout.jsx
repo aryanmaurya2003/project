@@ -13,29 +13,29 @@ function Dashboard() {
       </div>
       <div className="flex w-full overflow-x-hidden ">
         <div
-          className={` h-[calc(100vh-72px)] border-r border-slate-300 ${
+          className={`  max-h-[calc(100vh-72px)] border-r border-slate-300 ${
             !isToggle ? "w-[20%]" : "w-[84px]"
           } ease-in-out duration-200`}
         >
           {" "}
-          <Sidebar />{" "}
+          <Sidebar/>{" "}
         </div>
         <div
-          className={`w-[80%] h-[calc(100vh-112px)] bg-slate-200 ${
+          className={`w-[80%] overflow-y-scroll h-[calc(100vh-73px)] bg-slate-200 ${
             !isToggle ? "w-[80%]" : "w-[95%]"
           }  ease-in-out duration-200  `}
         >
           {" "}
-          <div className="h-full">
+          <div className="h-full ">
             {" "}
-            <Outlet />
+            <Outlet  />
           </div>
-          <div className="h-10">
+          {/* <div className="h-10">
             <Footer
               left="CloudKeeper 2025 | All Right Reserved"
               right="Contact Us"
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

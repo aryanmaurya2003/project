@@ -30,12 +30,7 @@ function Dashboard() {
             {" "}
             <Outlet  />
           </div>
-          {/* <div className="h-10">
-            <Footer
-              left="CloudKeeper 2025 | All Right Reserved"
-              right="Contact Us"
-            />
-          </div> */}
+          
         </div>
       </div>
     </div>

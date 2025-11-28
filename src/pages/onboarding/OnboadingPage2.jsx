@@ -243,12 +243,10 @@ function OnboardingPage2() {
         <ol className="w-[95%] mt-10 space-y-8 ml-10 bg-white p-10">
           {onboardingSteps.map((step, index) => (
             <li key={step.id} className="relative pl-15">
-              {/* Number Circle */}
               <span className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-slate-400 text-white font-bold mt-0.5">
                 {index + 1}
               </span>
 
-              {/* Description Rendering */}
               <div className="text-gray-700 inline">
                 {Array.isArray(step.description)
                   ? step.description.map((item, i) =>

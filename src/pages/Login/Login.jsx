@@ -8,7 +8,7 @@ function Login() {
     const navigate = useNavigate();
 
     const clickhandler = () => {
-        navigate("/dashboard");
+        navigate("/dashboard/user");
     }
     return (
       <div className=' flex  flex-col justify-between'>

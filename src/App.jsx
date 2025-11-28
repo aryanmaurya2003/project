@@ -7,6 +7,7 @@ import UserRoutes from "./Router/UserRoutes";
 import OnboardingRoutes from "./Router/Onboarding";
 import CostExplorerRoutes from "./Router/CostExplorer";
 import AwsRoutes from "./Router/AwsRoutes";
+import ErrorPage from "./pages/ErrorPage/ErrorPage";
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
           {CostExplorerRoutes}
           {AwsRoutes}
         </Route>
-        <Route path="/login" element={<h1>wrong route </h1>} />
+        <Route path="*" element={<ErrorPage/>} />
       </Routes>
     </>
   );

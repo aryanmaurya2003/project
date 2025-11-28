@@ -12,7 +12,13 @@ function Login() {
     const clickhandler = (e) => {
         e.preventDefault();
         if (email && password) {
-            navigate("/dashboard/user");
+            if(email==="test@gmail.com" && password==="test123"){
+                 navigate("/dashboard/user");
+            }
+            else{
+                alert("Invalid Credentials");
+            }
+           
         } else {
             alert("Please fill all fields");
         }

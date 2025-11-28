@@ -36,7 +36,8 @@ function NavBar() {
 
                 </div>
             </div>
-            <div className='h-full w-[10%] flex items-center'><div className='w-[120px] h-10 ml-3 border-2 text-blue-700 flex  justify-center items-center font-bold text-[16px] rounded-md'><VscSignOut className='scale-150 mr-3'/>Logout</div></div>
+            <div className='h-full w-[10%] flex items-center'><Link to={"/"}>
+            <div className='w-[120px] h-10 ml-3 border-2 text-blue-700 flex  justify-center items-center font-bold text-[16px] rounded-md'><VscSignOut className='scale-150 mr-3'/>Logout</div></Link></div>
 
         </div>
     )

@@ -14,14 +14,14 @@ function Dashboard() {
       <div className="flex w-full overflow-x-hidden ">
         <div
           className={`  max-h-[calc(100vh-72px)] border-r border-slate-300 ${
-            !isToggle ? "w-[20%]" : "w-[84px]"
+            !isToggle ? "w-[17%]" : "w-[84px]"
           } ease-in-out duration-200`}
         >
           {" "}
           <Sidebar/>{" "}
         </div>
         <div
-          className={`w-[80%] overflow-y-scroll h-[calc(100vh-73px)] bg-slate-200 ${
+          className={`w-[83%] overflow-y-scroll h-[calc(100vh-73px)] bg-slate-200 ${
             !isToggle ? "w-[80%]" : "w-[95%]"
           }  ease-in-out duration-200  `}
         >

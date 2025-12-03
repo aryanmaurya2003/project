@@ -207,7 +207,7 @@ function Onboarding() {
             >
               Back
             </button>
-            <Link to={"/dashboard/onboard/add"}>
+            <Link to={"/dashboard/onboard/add2"}>
               <button
                 type="submit"
                 className="w-[330px] h-10 grid place-content-center bg-primary border  border-primary text-white rounded-md hover:bg-white hover:text-primary  ease-in-out duration-300"

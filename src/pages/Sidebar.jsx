@@ -41,7 +41,7 @@ function Sidebar() {
   const isToggle = useSelector((state) => state.toggle.value);
 
   return (
-    <div className={` lg:w-full h-full ${!isToggle ? "p-10" : "pt-10"} `}>
+    <div className={` lg:w-full h-full ${!isToggle ? "p-5" : "pt-10"} `}>
       {SideElement.map((items) => (
         <div
           className="group  focus:bg-blue-100 "

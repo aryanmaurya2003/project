@@ -2,7 +2,6 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { GoHome } from "react-icons/go";
 import { useLocation } from "react-router-dom";
-import { GoHome } from "react-icons/go";
 
 
 function UserLayout() {

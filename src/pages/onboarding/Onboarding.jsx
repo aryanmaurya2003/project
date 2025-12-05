@@ -17,12 +17,26 @@ const onboardingSteps = [
     description:
       "In the Trusted entity type section, select Custom trust policy and replace with policy provided below.",
     codeBlock: `{
-  "Version": "2025",
+  "Version": "2012-10-17",
   "Statement": [
     {
-      "Effect": "none",
-      "code": { Vs code  },
-      "Action": "ne actioin"
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::951485052809:role/ck-tuner-nonprod-transitive-role"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "MU1HX0RFRkFVTFQwMzM5NTZlYS1kMDE3LTRjYmQtYjY3ZS1jMGI4NWJjY2U4Yzk="
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
     }
   ]
 }`,

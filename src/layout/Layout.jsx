@@ -21,7 +21,7 @@ function Dashboard() {
           <Sidebar/>{" "}
         </div>
         <div
-          className={`w-[83%] overflow-y-scroll h-[calc(100vh-73px)] bg-slate-200 ${
+          className={`w-[83%] overflow-y-auto h-[calc(100vh-73px)] bg-[#F7F7F7] ${
             !isToggle ? "w-[80%]" : "w-[95%]"
           }  ease-in-out duration-200  `}
         >

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { useLocation } from "react-router-dom";
+import AssignList from "./AssignList";
 
 const userData = [
   {
@@ -33,11 +34,11 @@ const userData = [
 const selectOptions = {
   label: "Select Role",
   id: "selectRoles",
-  name: "roles",
+  name: "role",
   errorMessage: "Role is required",
   options: [
     { label: "Admin", value: "admin" },
-    { label: "Read Only", value: "read-only" },
+    { label: "Read Only", value: "read_Only" },
     { label: "Customer", value: "customer" },
   ],
 };
@@ -47,7 +48,7 @@ function UserEdit() {
     firstName: "",
     lastName: "",
     email: "",
-    roles: "",
+    role: "",
   });
   
   const { state: { row } } = useLocation();
@@ -57,7 +58,7 @@ function UserEdit() {
       firstName: row.firstName || "",
       lastName: row.lastName || "",
       email: row.email || "",
-      roles: row.roles || "",
+      role: row.role || "",
     });
   }, [row]);
 
@@ -76,7 +77,7 @@ function UserEdit() {
       firstName: row.firstName || "",
       lastName: row.lastName || "",
       email: row.email || "",
-      roles: row.roles || "",
+      role: row.role || "",
     });
   };
 
@@ -111,11 +112,11 @@ function UserEdit() {
               </label>
               <select
                 id={selectOptions.id}
-                value={formData.roles}
+                value={formData.role}
                 name={selectOptions.name}
                 onChange={handleChange}
                 className={`text-[14px] ${
-                  formData.roles === "" ? "text-slate-400" : "text-black"
+                  formData.role === "" ? "text-slate-400" : "text-black"
                 } appearance-none w-[350px] border h-12 rounded-md block mt-1 indent-2 border-black focus:border focus:border-slate-400`}
               >
                 <option value="">Not Selected</option>
@@ -146,6 +147,8 @@ function UserEdit() {
           </div>
         </form>
       </div>
+            {formData.role === "customer" ? <AssignList /> : ""}{" "}
+
     </div>
   );
 }

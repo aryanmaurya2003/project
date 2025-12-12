@@ -1,4 +1,4 @@
-import * as React from "react";
+import React,{useEffect,useState} from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,9 +11,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from "react-router-dom";
 import { IoIosAdd } from "react-icons/io";
-import { RxReset } from "react-icons/rx";
 import { CiFilter } from "react-icons/ci";
 import { RiExpandUpDownFill } from "react-icons/ri";
+import { getAllUsers } from "../../API/User.api";
+import ThreeDotLoader from "../../commonComponent/Loading";
 
 const columns = [
   {
@@ -50,7 +51,7 @@ const columns = [
     minWidth: 150,
   },
   {
-    id: "roles",
+    id: "role",
     label: "Role",
     symbol: (
       <div className="flex gap-2">
@@ -62,148 +63,27 @@ const columns = [
   { id: "action", label: "Action", minWidth: 60, align: "center" },
 ];
 
-const rows = [
-  {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    roles: "admin",
-  },
-  {
-    firstName: "Sarah",
-    lastName: "Miller",
-    email: "sarah.miller@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "David",
-    lastName: "Williams",
-    email: "david.williams@example.com",
-    roles: "read-only",
-  },
-  {
-    firstName: "Emma",
-    lastName: "Johnson",
-    email: "emma.johnson@example.com",
-    roles: "admin",
-  },
-  {
-    firstName: "Michael",
-    lastName: "Brown",
-    email: "michael.brown@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "Linda",
-    lastName: "Davis",
-    email: "linda.davis@example.com",
-    roles: "read-only",
-  },
-  {
-    firstName: "Robert",
-    lastName: "Wilson",
-    email: "robert.wilson@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "Sophia",
-    lastName: "Taylor",
-    email: "sophia.taylor@example.com",
-    roles: "admin",
-  },
-  {
-    firstName: "James",
-    lastName: "Anderson",
-    email: "james.anderson@example.com",
-    roles: "read-only",
-  },
-  {
-    firstName: "Olivia",
-    lastName: "Thomas",
-    email: "olivia.thomas@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "Daniel",
-    lastName: "Moore",
-    email: "daniel.moore@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "Emma",
-    lastName: "Martin",
-    email: "emma.martin@example.com",
-    roles: "admin",
-  },
-  {
-    firstName: "Christopher",
-    lastName: "Lee",
-    email: "chris.lee@example.com",
-    roles: "read-only",
-  },
-  {
-    firstName: "Patricia",
-    lastName: "Jackson",
-    email: "patricia.jackson@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "Anthony",
-    lastName: "White",
-    email: "anthony.white@example.com",
-    roles: "admin",
-  },
-  {
-    firstName: "Barbara",
-    lastName: "Harris",
-    email: "barbara.harris@example.com",
-    roles: "read-only",
-  },
-  {
-    firstName: "Steven",
-    lastName: "Clark",
-    email: "steven.clark@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "Jennifer",
-    lastName: "Lewis",
-    email: "jennifer.lewis@example.com",
-    roles: "admin",
-  },
-  {
-    firstName: "Thomas",
-    lastName: "Walker",
-    email: "thomas.walker@example.com",
-    roles: "customer",
-  },
-  {
-    firstName: "Karen",
-    lastName: "Hall",
-    email: "karen.hall@example.com",
-    roles: "read-only",
-  },
-  {
-    firstName: "Paul",
-    lastName: "Allen",
-    email: "paul.allen@example.com",
-    roles: "admin",
-  },
-  {
-    firstName: "Nancy",
-    lastName: "Young",
-    email: "nancy.young@example.com",
-    roles: "customer",
-  },
-];
-
-const roleColors = {
-  admin: "white",
-  "read-only": "white",
-  customer: "white",
-};
 
 export default function UserListing() {
+  const [rows, setRowsData] = useState([]);
+
+useEffect(() => { 
+ async function fetchUsers() {
+    try {
+      const users = await getAllUsers("/user");
+      console.log("Fetched Users:", users);
+      if(users.userResponse){
+        console.log("Setting rows data:", users.userResponse);
+              setRowsData(users.userResponse||[]);
+
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      
+    }
+  }
+  fetchUsers();
+}, []);
   const handleEdit = (row) => console.log("Edit:", row);
   const handleDelete = (row) => console.log("Delete:", row);
 
@@ -229,7 +109,7 @@ export default function UserListing() {
                 to={"/dashboard/user/addUser"}
                 className="w-full h-full   flex justify-center items-center gap-2"
               >
-                <IoIosAdd className="text-white font-extrabold scale-200" />
+                <IoIosAdd className="text-w hite font-extrabold scale-200" />
                 Add New User
               </Link>
             </div>
@@ -329,6 +209,7 @@ export default function UserListing() {
           </Table>
         </TableContainer>
       </Paper>
+
     </div>
   );
 }

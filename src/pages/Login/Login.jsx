@@ -5,12 +5,15 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../../commonComponent/Footer";
 import { loginApi } from "../../API/Login.api";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { userChange } from "../../feature/User/UserSlice";
 
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setErrors] = useState({});
+  const dispatch = useDispatch();
 
   const validateFeild = (email, password) => {
     const newErrors = {};
@@ -40,15 +43,24 @@ function Login() {
         email: email,
         password: password,
       });
-      console.log("Login API Response:", response.data);
+      console.log("Login API Response:", response.data.data.userResponseDTO);
 
       if (response.error) {
         toast.error("Login Failed: " + response.error.data.message);
         console.log("---------", response);
-      }
-      else if (response.data.status == 202) {
+      } else if (response.data.status == 202) {
         toast.success("Login Successful");
-           setTimeout(() => {   },1500)
+        const user = {
+          firstName: response.data.data.userResponseDTO.firstName,
+          lastName: response.data.data.userResponseDTO.lastName,
+          email: response.data.data.userResponseDTO.email,
+          role: response.data.data.userResponseDTO.role,
+        };
+        localStorage.setItem("userData", JSON.stringify(user));
+        console.log("the yuse is thsi", user);
+
+        dispatch(userChange(user));
+        setTimeout(() => {}, 1500);
         navigate("/dashboard/user");
       }
     }

@@ -5,14 +5,18 @@ import { AiFillCaretDown } from "react-icons/ai";
 import { LuUsers, LuInfo } from "react-icons/lu";
 import { VscSignOut } from "react-icons/vsc";
 import {Link} from 'react-router-dom'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleChange } from '../feature/toggle/toggleSlice';
+import { userChange } from '../feature/User/UserSlice';
 
 function NavBar() {
     const dispatch=useDispatch();
     const handleClick = () => {
      dispatch(toggleChange());
     }
+
+    const value=useSelector((state)=>state.user.value)
+    console.log("the value is this ",value)
     // const value=useSelector((state)=>state.toggle.value);
   
     return (
@@ -31,7 +35,7 @@ function NavBar() {
                     <div className=' border border-blue-700 rounded-full h-10 w-10 grid place-content-center '><LuUsers className=' text-blue-700 scale-150 ' /></div>
                     <div className='border-r border-slate-300'>
                         <div className='text-[12px]'>Welcome,</div>
-                        <div className='font-bold text-blue-800 mr-5'>Aryn Maurya <LuInfo className='inline-block scale-110 ' /></div>
+                        <div className='font-bold text-blue-800 mr-5'>{value.firstName+" "+value.lastName}<LuInfo className='inline-block scale-110 ml-1 ' /></div>
                     </div>
 
                 </div>

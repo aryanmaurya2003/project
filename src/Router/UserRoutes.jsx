@@ -9,7 +9,7 @@ const UserRoutes = (
   <>
     <Route path="user" element={<UserLayout />}>
       <Route path="" element={<UserListing />} />
-      <Route path="addUser" element={<UserCreation />} />
+      <Route path="addUser" element={<UserEdit />} />
       <Route path="editUser" element={<UserEdit />} />
     </Route>
   </>

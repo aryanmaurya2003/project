@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { createUser, updateUser } from "../../API/User.api";
 import AssignList from "./AssignList";
-
-const userData = [
+import { useMemo } from "react";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+const formFields = [
   {
     label: "First Name",
     id: "firstName",
     type: "text",
     name: "firstName",
     placeholder: "Enter First Name",
+    errorMessage: "First Name is required",
     required: false,
   },
   {
@@ -18,7 +21,8 @@ const userData = [
     id: "lastName",
     type: "text",
     name: "lastName",
-    placeholder: "Enter Last Name",
+    placeholder: "Entercker> Last Name",
+    errorMessage: "Last Name is required",
     required: false,
   },
   {
@@ -27,15 +31,16 @@ const userData = [
     type: "email",
     name: "email",
     placeholder: "Enter Email",
+    errorMessage: "Valid email is required",
     required: false,
   },
 ];
 
-const selectOptions = {
+const roleOptions = {
   label: "Select Role",
-  id: "selectRoles",
+  id: "selectRole",
   name: "role",
-  errorMessage: "Role is required",
+  errorMessage: "Please Select any Option",
   options: [
     { label: "Admin", value: "admin" },
     { label: "Read Only", value: "read_Only" },
@@ -43,52 +48,117 @@ const selectOptions = {
   ],
 };
 
-function UserEdit() {
+function UserForm() {
   const [formData, setFormData] = useState({
+    id: "",
     firstName: "",
     lastName: "",
     email: "",
     role: "",
   });
-  
-  const { state: { row } } = useLocation();
+  const [errors, setErrors] = useState({});
+  const navigate=useNavigate();
+const role=useSelector((state)=>state.user.value.role)
+
+if(role!="admin"){
+navigate("/")
+}
+  const location = useLocation();
+  const { userId } = useParams();
+  const isEdit = Boolean(userId || location.state?.row);
+
+  const userData = useMemo(
+    () => location.state?.row,
+    [location.state?.row?.id]
+  );
 
   useEffect(() => {
-    setFormData({
-      firstName: row.firstName || "",
-      lastName: row.lastName || "",
-      email: row.email || "",
-      role: row.role || "",
-    });
-  }, [row]);
+    if (isEdit && userData) {
+      setFormData({
+        id: userData.id || "",
+        firstName: userData.firstName || "",
+        lastName: userData.lastName || "",
+        email: userData.email || "",
+        role: userData.role || "",
+      });
+    }
+  }, [isEdit, userData]);
+
+  const validateForm = (data) => {
+
+    const newErrors = {};
+    if (!data.firstName.trim()) newErrors.firstName = true;
+    if (!data.lastName.trim()) newErrors.lastName = true;
+    if (!data.email.trim() || !/\S+@\S+\.\S+/.test(data.email))
+      newErrors.email = true;
+    if (!data.role) newErrors.role = true;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: false }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updated data:", formData);
+
+    if (validateForm(formData)) {
+    
+        let response;
+        if (isEdit) {
+          response = await updateUser(formData);
+        } else {
+          response = await createUser(formData);
+        }
+
+        if (response.status === 200 || response.status === 202) {
+            toast.success(response.data.message);
+          
+        } else {
+          console.log('the data error',response)
+          toast.error(response.error.response.data.message || response.error.message);
+        }
+      
+    }
   };
 
   const handleReset = () => {
-    setFormData({
-      firstName: row.firstName || "",
-      lastName: row.lastName || "",
-      email: row.email || "",
-      role: row.role || "",
-    });
+    if (isEdit && userData) {
+      setFormData({
+        id: userData.id || "",
+        firstName: userData.firstName || "",
+        lastName: userData.lastName || "",
+        email: userData.email || "",
+        role: userData.role || "",
+      });
+    } else {
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        role: "",
+      });
+    }
+    setErrors({});
   };
 
   return (
     <div>
-      <div className="text-[28px] font-bold indent-3 mt-4">Edit User</div>
+      <div className="text-[28px] font-bold indent-3 mt-4">
+        {isEdit ? "Edit User" : "Add New User"}
+      </div>
       <hr className="text-slate-400 mt-8" />
       <div className="m-auto w-[98%] min-h-[310px] mt-20 bg-white">
         <form className="p-5" onSubmit={handleSubmit}>
           <div className="flex flex-wrap w-[60%] gap-5">
-            {userData.map((field) => (
+            {formFields.map((field) => (
               <div key={field.id}>
                 <label className="font-medium" htmlFor={field.id}>
                   {field.label}
@@ -101,32 +171,40 @@ function UserEdit() {
                   onChange={handleChange}
                   placeholder={field.placeholder}
                   required={field.required}
-                  className="block border h-12 indent-2 w-[350px] bg-white placeholder:text-[14px] rounded-md mt-1 focus:outline-none focus:border-2 focus:border-slate-400"
+                  className={`block ${
+                    errors[field.name] ? "border-red-600" : ""
+                  } border h-12 indent-2 w-[350px] bg-white placeholder:text-[14px] rounded-md mt-1 focus:outline-none focus:border-2 focus:border-slate-400`}
                 />
+                {errors[field.name] && (
+                  <span className="text-red-800">{field.errorMessage}</span>
+                )}
               </div>
             ))}
-            
+
             <div className="relative">
-              <label htmlFor={selectOptions.id} className="font-medium">
-                {selectOptions.label}
+              <label htmlFor={roleOptions.id} className="font-medium">
+                {roleOptions.label}
               </label>
               <select
-                id={selectOptions.id}
+                id={roleOptions.id}
                 value={formData.role}
-                name={selectOptions.name}
+                name={roleOptions.name}
                 onChange={handleChange}
                 className={`text-[14px] ${
                   formData.role === "" ? "text-slate-400" : "text-black"
-                } appearance-none w-[350px] border h-12 rounded-md block mt-1 indent-2 border-black focus:border focus:border-slate-400`}
+                } appearance-none w-[350px] border h-12 rounded-md block mt-1 indent-2 border-black focus:border-2 focus:border-slate-400`}
               >
                 <option value="">Not Selected</option>
-                {selectOptions.options.map((item) => (
+                {roleOptions.options.map((item) => (
                   <option value={item.value} key={item.value}>
                     {item.label}
                   </option>
                 ))}
               </select>
               <RiArrowDropDownLine className="pointer-events-none absolute top-[45px] scale-[4] w-3 h-3 right-4 text-slate-400" />
+              {errors.role && (
+                <div className="text-red-600">{roleOptions.errorMessage}</div>
+              )}
             </div>
           </div>
 
@@ -142,15 +220,14 @@ function UserEdit() {
               type="submit"
               className="w-30 bg-[#195fe2] text-white px-4 py-2 rounded-md mt-5 mr-20"
             >
-              Submit
+              {isEdit ? "Update" : "Submit"}
             </button>
           </div>
         </form>
       </div>
-            {formData.role === "customer" ? <AssignList /> : ""}{" "}
-
+      {formData.role === "customer" && <AssignList />}
     </div>
   );
 }
 
-export default UserEdit;
+export default UserForm;

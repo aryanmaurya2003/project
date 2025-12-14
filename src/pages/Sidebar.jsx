@@ -13,71 +13,80 @@ const SideElement = [
     name: "User",
     icon: <GrUserSettings className=" inline w-6 h-6 " />,
     link: "/dashboard/user",
+    role:["admin","read_Only"]
   },
   {
     id: "onboard",
     name: "Onboarding",
     icon: <MdAccountBalance className=" inline w-6 h-6 " />,
     link: "/dashboard/onboard",
+    role:["admin"]
   },
   {
     id: "costExplorer",
     name: "Cost Explorer",
     icon: <SiCompilerexplorer className=" inline w-6 h-6 " />,
     link: "/dashboard/costExplorer",
+    role:["admin","read_Only","customer"]
   },
   {
     id: "aws",
     name: "Aws Service",
     icon: <FaAws className=" inline w-6 h-6 " />,
     link: "/dashboard/aws",
+    role:["admin","read_Only","customer"]
   },
 ];
 
 function Sidebar() {
-
-  const path=useLocation().pathname.split('/')[2]
+  const path = useLocation().pathname.split('/')[2];
   const [active, setActive] = useState(path);
   const isToggle = useSelector((state) => state.toggle.value);
+  const userRole = useSelector((state) => state.user.value.role);
 
   return (
     <div className={` lg:w-full h-full ${!isToggle ? "p-5" : "pt-10"} `}>
-      {SideElement.map((items) => (
-        <div
-          className="group  focus:bg-blue-100 "
-          key={items.id}
-          onClick={() => {
-            setActive(items.id);
-          }}
-        >
-          <Link to={items.link} className="ml-3 flex flex-row  ">
+      {SideElement.map((items) => {
+        if (items.role.includes(userRole)) {
+          return (
             <div
-              className={` ${
-                !isToggle ? "w-full group-hover:bg-blue-100 mt-2 " : "mt-4 ml-2"
-              }  h-15 flex items-center rounded-sm   ease-in duration-300 ${
-                active === items.id ? (!isToggle ? "bg-blue-200" : "") : ""
-              }`}
+              className="group  focus:bg-blue-100 "
+              key={items.id}
+              onClick={() => {
+                setActive(items.id);
+              }}
             >
-              <div
-                className={`w-11 h-11  flex  justify-center items-center   ${
-                  !isToggle ? "ml-5 " : "scale-110"
-                }  rounded-md  group-hover:bg-blue-400 group-hover:text-white ease-in duration-200 ${
-                  active === items.id ? "bg-blue-400 text-white" : ""
-                }`}
-              >
-                {items.icon}
-              </div>
-              <span
-                className={`ml-5 text-xl  items-center  ${
-                  !isToggle ? "flex " : "hidden"
-                }`}
-              >
-                {items.name}
-              </span>
+              <Link to={items.link} className="ml-3 flex flex-row  ">
+                <div
+                  className={` ${
+                    !isToggle ? "w-full group-hover:bg-blue-100 mt-2 " : "mt-4 ml-2"
+                  }  h-15 flex items-center rounded-sm   ease-in duration-300 ${
+                    active === items.id ? (!isToggle ? "bg-blue-200" : "") : ""
+                  }`}
+                >
+                  <div
+                    className={`w-11 h-11  flex  justify-center items-center   ${
+                      !isToggle ? "ml-5 " : "scale-110"
+                    }  rounded-md  group-hover:bg-blue-400 group-hover:text-white ease-in duration-200 ${
+                      active === items.id ? "bg-blue-400 text-white" : ""
+                    }`}
+                  >
+                    {items.icon}
+                  </div>
+                  <span
+                    className={`ml-5 text-xl  items-center  ${
+                      !isToggle ? "flex " : "hidden"
+                    }`}
+                  >
+                    {items.name}
+                  </span>
+                </div>
+              </Link>
             </div>
-          </Link>
-        </div>
-      ))}
+          );
+        }
+        return null;
+      })}
     </div>
   );
 }

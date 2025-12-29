@@ -1,33 +1,38 @@
-import axios from 'axios';
+import axios from "axios";
 
-const app=axios.create({
-    baseURL: 'http://localhost:8080',
-    timeout: 8000,
-    withCredentials: true
-
+const app = axios.create({
+  baseURL: "http://localhost:8080",
+  timeout: 8000,
+  withCredentials: true,
 });
 
-app.interceptors.request.use(config => {
-    // console.log('Request Config:', config); 
+app.interceptors.request.use(
+  (config) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    const authtoken = `Bearer ${token}`;
+    config.headers.Authorization = authtoken;
     return config;
-}, error => {
+  },
+  (error) => {
     return Promise.reject(error);
-});
+  }
+);
 
-
-app.interceptors.response.use(config => {
-        console.log('response Config:', config); 
-
+app.interceptors.response.use(
+  (config) => {
+    console.log("response Config:", config);
     return config;
-}, error => {
-    console.log("tje errodr is this",error.status)
-    
-    if(error.status==403 || error.status==401){
-        window.location.href = '/';
+  },
+  (error) => {
+    console.log("error is this", error);
+    if (error.status == 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userAuthenticated");
+      localStorage.removeItem("userData");
     }
-    return Promise.reject(error);
-});
 
+    return Promise.reject(error);
+  }
+);
 
 export default app;
-

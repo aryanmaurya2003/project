@@ -4,10 +4,11 @@ import UserListing from "../pages/user management/UserListing";
 import UserCreation from "../pages/user management/userCreation";
 import UserEdit from "../pages/user management/userEdit";
 import UserLayout from "../layout/UserLayout";
+import ProtectedRoutes from "../commonComponent/ProtectedRoutes";
 
 const UserRoutes = (
   <>
-    <Route path="user" element={<UserLayout />}>
+    <Route path="user" element={<ProtectedRoutes> <UserLayout /></ProtectedRoutes>}>
       <Route path="" element={<UserListing />} />
       <Route path="addUser" element={<UserEdit />} />
       <Route path="editUser" element={<UserEdit />} />

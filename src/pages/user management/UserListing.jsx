@@ -18,6 +18,7 @@ import ThreeDotLoader from "../../commonComponent/Loading";
 import { deleteUser } from "../../API/User.api";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import Loading from "../../commonComponent/Loading";
 
 const columns = [
   {
@@ -68,25 +69,32 @@ const columns = [
 
 export default function UserListing() {
   const [rows, setRowsData] = useState([]);
-  const navigate=useNavigate();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const data = useSelector((state) => state.user.value.role);
 
-  if(data=="customer"){
-    navigate("/")
+  if (data == "customer") {
+    navigate("/");
   }
 
   useEffect(() => {
     async function fetchUsers() {
-      try {
-        const users = await getAllUsers("/user");
-        console.log("Fetched Users:", users);
-        if (users.userResponse) {
-          console.log("Setting rows data:", users.userResponse);
-          setRowsData(users.userResponse || []);
+      
+        const response = await getAllUsers("/user");
+        console.log("Fetched Users:", response);
+        if (response.userResponse) {
+          console.log("Setting rows data:", response.userResponse);
+          setLoading(false);
+          setRowsData(response.userResponse || []);
         }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
+        else if(response.status==401){
+          toast.error(response.response.data.message)
+        localStorage.removeItem("token")
+        localStorage.removeItem("userAuthenticated")
+        localStorage.removeItem("userData")
+          navigate("/")
+        }
+     
     }
     fetchUsers();
   }, []);
@@ -103,6 +111,9 @@ export default function UserListing() {
       toast.error(response.error.message);
     }
   };
+  if(loading){
+   return <Loading className="z-50 "/>
+  }
 
   return (
     <div className="  ">
@@ -121,7 +132,11 @@ export default function UserListing() {
       >
         <div className="flex justify-between h-[45px] ">
           <div className="flex  gap-2  ">
-            <div className={`border text-white bg-black w-40  font-bold rounded-md ${data!="admin"?"hidden":""}`}>
+            <div
+              className={`border text-white bg-black w-40  font-bold rounded-md ${
+                data != "admin" ? "hidden" : ""
+              }`}
+            >
               <Link
                 to={"/dashboard/user/addUser"}
                 className={`w-full h-full   flex justify-center items-center gap-2 `}
@@ -165,7 +180,7 @@ export default function UserListing() {
                       }}
                     >
                       <div className=" flex items-center justify-between ">
-                        <div className="">{column.label}</div>
+                        <div>{column.label}</div>
                         {column.symbol}
                       </div>
                     </TableCell>
@@ -175,66 +190,65 @@ export default function UserListing() {
             </TableHead>
 
             <TableBody>
-  {rows.map((row, index) => (
-    <TableRow
-      hover
-      key={index}
-      sx={{
-        backgroundColor: `${index % 2 === 0 ? "#f9f9f9" : "white"}`,
-      }}
-    >
-      {columns.map((column) => {
-        // Skip action column for non-admin users
-        if (column.id === "action" && data !== "admin") {
-          return null;
-        }
-
-        const value = row[column.id];
-
-        if (column.id === "action" && data === "admin") {
-          return (
-            <TableCell key={column.id} align="center">
-              <Link to={"/dashboard/user/editUser"} state={{ row }}>
-                <IconButton
-                  color="primary"
-                  onClick={() => handleEdit(row)}
+              {rows.map((row, index) => (
+                <TableRow
+                  hover
+                  key={index}
+                  sx={{
+                    backgroundColor: `${index % 2 === 0 ? "#f9f9f9" : "white"}`,
+                  }}
                 >
-                  <EditIcon />
-                </IconButton>
-              </Link>
+                  {columns.map((column) => {
+                    // Skip action column for non-admin users
+                    if (column.id === "action" && data !== "admin") {
+                      return null;
+                    }
 
-              <IconButton
-                color="error"
-                onClick={() => handleDelete(row)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </TableCell>
-          );
-        }
-        
-        if (column.id === "role") {
-          return (
-            <TableCell key={column.id} align={column.align}>
-              <div
-                className={`w-18 h-6 rounded-sm text-[13px] flex justify-center items-center  border border-slate-300 bg-[#e8f1ff]`}
-              >
-                {value}
-              </div>
-            </TableCell>
-          );
-        }
+                    const value = row[column.id];
 
-        return (
-          <TableCell key={column.id} align={column.align}>
-            {value}
-          </TableCell>
-        );
-      })}
-    </TableRow>
-  ))}
-</TableBody>
+                    if (column.id === "action" && data === "admin") {
+                      return (
+                        <TableCell key={column.id}>
+                          <Link to={"/dashboard/user/editUser"} state={{ row }}>
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleEdit(row)}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Link>
 
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDelete(row)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      );
+                    }
+
+                    if (column.id === "role") {
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          <div
+                            className={`w-18 h-6 rounded-sm text-[13px] flex justify-center items-center  border border-slate-300 bg-[#e8f1ff]`}
+                          >
+                            {value}
+                          </div>
+                        </TableCell>
+                      );
+                    }
+
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </TableContainer>
       </Paper>

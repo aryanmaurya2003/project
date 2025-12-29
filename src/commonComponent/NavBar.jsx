@@ -4,21 +4,31 @@ import { TfiMenu } from "react-icons/tfi";
 import { AiFillCaretDown } from "react-icons/ai";
 import { LuUsers, LuInfo } from "react-icons/lu";
 import { VscSignOut } from "react-icons/vsc";
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleChange } from '../feature/toggle/toggleSlice';
 import { userChange } from '../feature/User/UserSlice';
 
 function NavBar() {
     const dispatch=useDispatch();
+    const navigate=useNavigate();
     const handleClick = () => {
      dispatch(toggleChange());
     }
 
     const value=useSelector((state)=>state.user.value)
     console.log("the value is this ",value)
-    // const value=useSelector((state)=>state.toggle.value);
-  
+
+    const handleLogout=()=>{
+        localStorage.removeItem("token")
+        localStorage.removeItem("userAuthenticated")
+        localStorage.removeItem("userData")
+
+        setTimeout(()=>{},2000);
+
+        navigate("/")
+
+    }
     return (
         <div className='w-full flex h-18 shadow-[0_4px_10px_rgba(0,0,0,0.15)]'>
             <div className='h-full w-[19%] grid place-content-center'><img src={cloudKeeper} /></div>
@@ -40,7 +50,7 @@ function NavBar() {
 
                 </div>
             </div>
-            <div className='h-full w-[10%] flex items-center'><Link to={"/"}>
+            <div className='h-full w-[10%] flex items-center' onClick={handleLogout}><Link to={"/"}>
             <div className='w-[120px] h-10 ml-3 border-2 text-blue-700 flex  justify-center items-center font-bold text-[16px] rounded-md'><VscSignOut className='scale-150 mr-3'/>Logout</div></Link></div>
 
         </div>

@@ -20,7 +20,7 @@ const SideElement = [
     name: "Onboarding",
     icon: <MdAccountBalance className=" inline w-6 h-6 " />,
     link: "/dashboard/onboard",
-    role:["admin"]
+    role:["admin","read_Only"]
   },
   {
     id: "costExplorer",

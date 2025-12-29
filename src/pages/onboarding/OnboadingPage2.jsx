@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import iamRole from "../../assets/iamrole.png";
 import CodeBlock from "../../commonComponent/CodeBlock";
 import Block from "../../commonComponent/Block";
+import { toast } from "react-toastify";
 
 const onboardingSteps = [
   {
@@ -209,6 +210,7 @@ function OnboardingPage2() {
   const [arnRole, setarnRole] = useState("");
   const [copyStatus, setCopyStatus] = useState(false);
   const [copyStatus1, setCopyStatus1] = useState(false);
+  const navigate = useNavigate();
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(code);
@@ -221,15 +223,35 @@ function OnboardingPage2() {
     setCopyStatus1(true);
     setTimeout(() => setCopyStatus1(false), 1500);
   };
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (arnRole.length === 0) {
-      setErrors(true);
-    } else {
-      setErrors(false);
-      alert(`Form submitted successfully: ${arnRole}`);
+  const formValue = localStorage.getItem("onboardingFormData");
+  
+  if (formValue) {
+    const parsedFormValue = JSON.parse(formValue);
+    if (
+      !parsedFormValue.awsid?.trim() ||
+      !parsedFormValue.AccountName?.trim() ||
+      !parsedFormValue.ARN_Name?.trim()
+    ) {
+      localStorage.removeItem("onboardingFormData");
+      toast.error("please fill required field");
+      navigate("/dashboard/onboard/add");
+      return;
     }
+  } else {
+    toast.error("please fill required field");
+    navigate("/dashboard/onboard/add");
+    return;
+  }
+
+  navigate("/dashboard/onboard/add3");
+};
+
+ 
+  const handleBack = () => {
+    navigate(-1);
   };
 
   return (
@@ -239,7 +261,7 @@ function OnboardingPage2() {
         <div>Create an inline policy for the role below</div>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form>
         <ol className="w-[95%] mt-10 space-y-8 ml-10 bg-white p-10">
           {onboardingSteps.map((step, index) => (
             <li key={step.id} className="relative pl-15">
@@ -284,57 +306,32 @@ function OnboardingPage2() {
               )}
 
               {step.image && (
-                <div className="mt-4 w-[90%] border-2 border-primary rounded-md">
+                <div className="mt-4 w-[98%] border-2 border-primary rounded-md">
                   <img
                     src={step.image}
                     alt={step.alt}
-                    className="max-h-[180px] w-full"
+                    className="max-h-[250px] w-full"
                   />
-                </div>
-              )}
-
-              {step.inputBox && (
-                <div>
-                  <div className="text-[12px] mt-3 text-slate-500">
-                    {step.message}
-                  </div>
-                  <div className="mt-1 w-[380px] border-2 border-primary rounded-md">
-                    <input
-                      type="text"
-                      value={arnRole}
-                      onChange={(e) => setarnRole(e.target.value)}
-                      className="w-full indent-3 h-13 text-md"
-                      placeholder={step.message}
-                    />
-                  </div>
-                  {error && (
-                    <div className="text-red-700 text-[12px] mt-2">
-                      This field is required
-                    </div>
-                  )}
                 </div>
               )}
             </li>
           ))}
         </ol>
 
-        <div className="flex justify-between px-10 mt-5">
-          <button
-            type="submit"
-            className="w-[130px] h-10 grid place-content-center bg-white border border-primary text-primary rounded-md hover:bg-primary hover:text-white duration-300"
-          >
-            Cancel
-          </button>
+        <div className="flex justify-end px-10 mt-5">
+          
 
           <div className="flex gap-10">
             <button
               type="button"
+              onClick={handleBack}
               className="w-[330px] h-10 grid place-content-center bg-white border border-primary text-primary rounded-md hover:bg-primary hover:text-white duration-300"
             >
               Back- Create An Ian Role
             </button>
 
             <button
+              onClick={handleSubmit}
               type="submit"
               className="w-[330px] h-10 grid place-content-center bg-primary border border-primary text-white rounded-md hover:bg-white hover:text-primary duration-300"
             >

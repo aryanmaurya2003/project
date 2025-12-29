@@ -2,7 +2,7 @@ import React from "react";
 
 const Loading = () => {
   return (
-    <>
+    <div className="w-full h-[calc(100vh-100px)] grid place-content-center ">
       <style>
         {`
           @keyframes rectPulse {
@@ -39,7 +39,7 @@ const Loading = () => {
         />
 
       </div>
-    </>
+    </div>
   );
 };
 

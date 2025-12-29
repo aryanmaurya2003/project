@@ -5,7 +5,7 @@ import { FaCheck } from "react-icons/fa";
 function CodeBlock({handleCopy,copyStatus,codeBlock}) {
   return (
     <>
-      <div className="mt-4 relative w-[90%] border-2 border-primary rounded-md">
+      <div className="mt-4 relative w-[98%] border-1 border-primary rounded-md">
         <button
           onClick={() => handleCopy(codeBlock)}
           className="absolute right-8 top-2 text-sm px-3 py-1 border rounded-md ease-in-out duration-150 border-primary grid place-content-center h-6 w-8"

@@ -20,7 +20,7 @@ function Login() {
 
     if (!email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       newErrors.email = "Enter a valid email address";
     }
 
@@ -31,40 +31,41 @@ function Login() {
     }
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
+  const formHandler=(e)=>{
+    console.log("the form is misbehaving")
+    e.preventDefault();
+
+  }
 
   const clickhandler = async (e) => {
     e.preventDefault();
-
-    if (validateFeild(email, password)) {
-      const response = await loginApi("/login", {
-        email: email,
-        password: password,
-      });
-      console.log("Login API Response:", response.data.data.userResponseDTO);
-
-      if (response.error) {
-        toast.error("Login Failed: " + response.error.data.message);
-        console.log("---------", response);
-      } else if (response.data.status == 202) {
-        toast.success("Login Successful");
-        const user = {
-          firstName: response.data.data.userResponseDTO.firstName,
-          lastName: response.data.data.userResponseDTO.lastName,
-          email: response.data.data.userResponseDTO.email,
-          role: response.data.data.userResponseDTO.role,
-        };
-        localStorage.setItem("userData", JSON.stringify(user));
-        console.log("the yuse is thsi", user);
-
-        dispatch(userChange(user));
-        setTimeout(() => {}, 1500);
-        navigate("/dashboard/user");
-      }
-    }
+    console.log("the data is getting submitted");
+        if (validateFeild(email, password)) {
+           const response = await loginApi("/login", {
+            email: email,
+            password: password,
+          })
+          console.log("the error is this", response);
+          if (response.status==401) {
+    toast.error(response.response.data.message)
+          } else if (response.status == 200) {
+            toast.success("Login Successful");
+            const user = {
+              firstName: response.data.userResponseDTO.firstName,
+              lastName: response.data.userResponseDTO.lastName,
+              email: response.data.userResponseDTO.email,
+              role: response.data.userResponseDTO.role,
+            };
+            localStorage.setItem("userData", JSON.stringify(user));
+            localStorage.setItem("token", JSON.stringify(response.data.jwt));
+            dispatch(userChange(user));
+            navigate("/dashboard/user");
+          }
+        }
   };
+
   return (
     <div className=" flex  flex-col justify-between">
       <div className="w-screen h-[calc(100vh-40px)] flex justify-center items-center">
@@ -76,7 +77,7 @@ function Login() {
               className="w-[210px] h-[46px]"
             />
           </div>
-          <form>
+          <form onSubmit={(e)=>formHandler(e)}>
             <label
               htmlFor="email"
               className="block font-extralight text-[14px] mt-[25px]"
@@ -106,25 +107,15 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             {error.password && <div>{error.password}</div>}
-
-            <div className="text-end mt-4">
-              {" "}
-              <Link
-                to={"#"}
-                className="skyColor 
-                        text-[12px] font-semibold"
-              >
-                Forgot Password
-              </Link>
-            </div>
-
-            <button
-              className="login w-full h-[45px]  skyBackColor text-white mt-9  rounded-lg text-[14px]"
-              onClick={clickhandler}
-            >
-              LOGIN
-            </button>
           </form>
+          <button
+            className="login w-full h-[45px]   skyBackColor text-white mt-15  rounded-lg text-[14px]"
+            onClick={(e) => {
+              clickhandler(e);
+            }}
+          >
+            LOGIN
+          </button>
         </div>
       </div>
 

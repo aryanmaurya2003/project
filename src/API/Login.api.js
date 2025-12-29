@@ -1,19 +1,19 @@
-import app from "../axios/axios";
-
+import axios from "axios";
 export const loginApi = async (url, data) => {
 
 
     try {
-        const response = await app.post(url, data);
-        return {data:response};
+        const response = await axios.post(`http://localhost:8080${url}`, data, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return response
 
     }
     catch (error) {
-        console.log("Login API Error:", error);
-        if(error.message){
-            return { error: { data: { message: error.message } } };
-        }
-        return { error:error}
+
+        return error
     }
 
 

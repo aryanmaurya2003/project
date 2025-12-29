@@ -21,7 +21,7 @@ const formFields = [
     id: "lastName",
     type: "text",
     name: "lastName",
-    placeholder: "Entercker> Last Name",
+    placeholder: " Last Name",
     errorMessage: "Last Name is required",
     required: false,
   },
@@ -57,12 +57,13 @@ function UserForm() {
     role: "",
   });
   const [errors, setErrors] = useState({});
-  const navigate=useNavigate();
-const role=useSelector((state)=>state.user.value.role)
+  const [AssignedAccount, setAssignedAccounts] = useState([]);
+  const navigate = useNavigate();
+  const role = useSelector((state) => state.user.value.role);
 
-if(role!="admin"){
-navigate("/")
-}
+  if (role != "admin") {
+    navigate("/");
+  }
   const location = useLocation();
   const { userId } = useParams();
   const isEdit = Boolean(userId || location.state?.row);
@@ -85,7 +86,6 @@ navigate("/")
   }, [isEdit, userData]);
 
   const validateForm = (data) => {
-
     const newErrors = {};
     if (!data.firstName.trim()) newErrors.firstName = true;
     if (!data.lastName.trim()) newErrors.lastName = true;
@@ -109,44 +109,30 @@ navigate("/")
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("assined list is this--------", formData);
     if (validateForm(formData)) {
-    
-        let response;
-        if (isEdit) {
-          response = await updateUser(formData);
-        } else {
-          response = await createUser(formData);
-        }
+      let response;
+      const newFormData = {
+          formData: formData,
+          assignedList: AssignedAccount,
+        };
+      if (isEdit) {
+        response = await updateUser(newFormData);
+      } else {
+        response = await createUser(newFormData);
+      }
 
-        if (response.status === 200 || response.status === 202) {
-            toast.success(response.data.message);
-          
-        } else {
-          console.log('the data error',response)
-          toast.error(response.error.response.data.message || response.error.message);
-        }
-      
+      if (response.status === 200 || response.status === 202) {
+        toast.success(response.data.message);
+      } else if (response.status == 400 || response.status == 401) {
+        navigate("/");
+      } else {
+        console.log("the data error", response);
+        toast.error(
+          response.error.response.data.message || response.error.message
+        );
+      }
     }
-  };
-
-  const handleReset = () => {
-    if (isEdit && userData) {
-      setFormData({
-        id: userData.id || "",
-        firstName: userData.firstName || "",
-        lastName: userData.lastName || "",
-        email: userData.email || "",
-        role: userData.role || "",
-      });
-    } else {
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        role: "",
-      });
-    }
-    setErrors({});
   };
 
   return (
@@ -208,14 +194,13 @@ navigate("/")
             </div>
           </div>
 
+          {formData.role === "customer" && (
+            <AssignList
+              setAssignedAccounts={setAssignedAccounts}
+              userid={formData.id}
+            />
+          )}
           <div className="flex gap-5 mt-8 lg:justify-end">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="w-30 bg-[#195fe2] text-white px-4 py-2 rounded-md mt-5"
-            >
-              Reset
-            </button>
             <button
               type="submit"
               className="w-30 bg-[#195fe2] text-white px-4 py-2 rounded-md mt-5 mr-20"
@@ -225,7 +210,6 @@ navigate("/")
           </div>
         </form>
       </div>
-      {formData.role === "customer" && <AssignList />}
     </div>
   );
 }

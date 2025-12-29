@@ -1,9 +1,12 @@
+
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-// import iamRole from "../../"
+import { Link, useNavigate } from "react-router-dom";
 import iamRole from "../../assets/iamrole.png";
 import CodeBlock from "../../commonComponent/CodeBlock";
 import Block from "../../commonComponent/Block";
+import { toast } from "react-toastify";
+
+
 
 const onboardingSteps = [
   {
@@ -59,57 +62,119 @@ const onboardingSteps = [
     image: iamRole,
     alt: "Error in loading image",
   },
-  {
-    id: 6,
+  {id: 6,
     description: "Paste the copied row ARN below",
+     inputBox: true,
+    inputArray:[{
+    id: 15,
     inputBox: true,
-    message: "Enter the IAM role ARN",
+    placeholder: "Enter aws id",
+    name: "awsid",
   },
+  {
+    id: 7,
+    inputBox: true,
+    placeholder: "Enter account name",
+    name: "AccountName",
+  },
+  {
+    id: 8,
+    inputBox: true,
+    placeholder: "Enter the IAM role ARN",
+    name: "ARN_Name",
+  },]
+  },
+ 
 ];
 
+
 function Onboarding() {
-  const [error, setErrors] = useState(false);
-  const [arnRole, setarnRole] = useState("");
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
   const [copyStatus, setCopyStatus] = useState(false);
   const [copyStatus1, setCopyStatus1] = useState(false);
+  const [formValue, setFormValue] = useState(() => {
+  const savedData = localStorage.getItem("onboardingFormData");
+  if (savedData) {
+    try {
+      return JSON.parse(savedData);
+    } catch (error) {
+      console.error("Error parsing saved data:", error);
+    }
+  }
+  return {
+    awsid: "",
+    ARN_Name: "",
+    AccountName: "",
+  };
+});
 
-  console.log("the value is this", arnRole);
 
+
+  
   const handleCopy = (code) => {
     navigator.clipboard.writeText(code);
     setCopyStatus(true);
-
-    setTimeout(() => {
-      setCopyStatus(false);
-    }, 1500);
+    setTimeout(() => setCopyStatus(false), 1500);
   };
+
   const handleCopy1 = (code) => {
     navigator.clipboard.writeText(code);
     setCopyStatus1(true);
-
-    setTimeout(() => {
-      setCopyStatus1(false);
-    }, 1500);
+    setTimeout(() => setCopyStatus1(false), 1500);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(arnRole.length);
-    if (arnRole.length === 0) {
-      setErrors(true);
-    } else {
-      setErrors(false);
-      alert(`form submitted successfully ${arnRole}`);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValue({ ...formValue, [name]: value });
+    
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formValue.awsid.trim()) {
+      newErrors.awsid = "AWS ID is required";
+    }
+    
+    if (!formValue.AccountName.trim()) {
+      newErrors.AccountName = "Account Name is required";
+    }
+    
+    if (!formValue.ARN_Name.trim()) {
+      newErrors.ARN_Name = "IAM Role ARN is required";
+    } 
+    
+    return newErrors;
+  };
+
+  const handleNext = (e) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+    console.log("the erroris tis ", validationErrors)
+    
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      toast.error("please fill all the feild ")
+      return;
+    }
+    localStorage.setItem("onboardingFormData", JSON.stringify(formValue))
+    
+    toast.success("Data field saved")
+    navigate("/dashboard/onboard/add2");
+  };
+
   return (
-    <div className=" p-8">
+    <div className="p-8">
       <div className="ml-9">
         <div className="text-2xl font-bold">Create an IAM role</div>
         <div>Create an IAM role by following these steps</div>
       </div>
-      <form onSubmit={handleSubmit}>
+      
+      <form onSubmit={handleNext}>
         <ol className="w-[95%] mt-10 space-y-8 ml-10 bg-white p-10">
           {onboardingSteps.map((step, index) => (
             <li key={step.id} className="relative pl-15">
@@ -117,7 +182,36 @@ function Onboarding() {
                 {index + 1}
               </span>
 
-              <div className="text-gray-700 inline ">{step.description}</div>
+              <div className="text-gray-700 inline">{step.description}</div>
+
+              {step.inputBox && Array.isArray(step.inputArray) && (
+                <div className="mt-[10px]  flex gap-x-20 gap-y-5 flex-wrap list-none">
+                  {step.inputArray.map((input) => (
+                    <div key={input.name} className="inline list-none">
+                      <div className="text-[12px] text-slate-500 mb-1">
+                        {input.label} 
+                      </div>
+                      <div className={`mt-1 w-[420px] border-2 rounded-md ${
+                        errors[input.name] ? 'border-red-500' : 'border-primary'
+                      }`}>
+                        <input
+                          type="text"
+                          value={formValue[input.name]}
+                          name={input.name}
+                          onChange={handleChange}
+                          className="w-full indent-3 h-13 text-md rounded-md"
+                          placeholder={input.placeholder}
+                        />
+                      </div>
+                      {errors[input.name] && (
+                        <div className="text-red-700 text-[12px] mt-2">
+                          {errors[input.name]}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {step.link && (
                 <Link
@@ -128,107 +222,44 @@ function Onboarding() {
                 </Link>
               )}
 
-              {/* {step.codeBlock && (
-                <div className="mt-4 relative w-[90%] border-2 border-primary rounded-md">
-                  <button
-                    onClick={() => handleCopy(step.codeBlock)}
-                    className="absolute right-8 top-2 text-sm px-3 py-1 border rounded-md ease-in-out duration-150 border-primary grid place-content-center h-6 w-8"
-                  >
-                    {copyStatus ? (
-                      <FaCheck className="text-primary" />
-                    ) : (
-                      <IoCopyOutline className=" text-primary hover:scale-125 ease-in-out duration-300" />
-                    )}
-                  </button>
+              {step.codeBlock && (
+                <CodeBlock
+                  handleCopy={handleCopy}
+                  copyStatus={copyStatus}
+                  codeBlock={step.codeBlock}
+                />
+              )}
 
-                  <pre className="bg-white text-primary font-bold p-4 rounded-lg overflow-x-auto text-sm h-50">
-                    <code>{step.codeBlock}</code>
-                  </pre>
-                </div>
-              )} */}
-
-              {step.codeBlock && (<CodeBlock  handleCopy={handleCopy} copyStatus={copyStatus} codeBlock={step.codeBlock}  />)}
-              {/* {step.codeBlock1 && (
-                <div>
-                  <div
-                    className="mt-4 relative w-[90%] border-2 border-primary rounded-md"
-                    onClick={() => handleCopy1(step.codeBlock1)}
-                  >
-                    <button className="absolute left-4 top-2 text-sm px-3 py-1 border rounded-md ease-in-out duration-150 border-primary grid place-content-center h-6 w-8">
-                      {copyStatus1 ? (
-                        <FaCheck className="text-primary" />
-                      ) : (
-                        <IoCopyOutline className=" text-primary hover:scale-125 ease-in-out duration-300" />
-                      )}
-                    </button>
-
-                    <pre className="bg-white flex items-center text-md indent-13 text-primary font-bold p-4 rounded-lg overflow-x  h-10">
-                      <code>{step.codeBlock1}</code>
-                    </pre>
-                  </div>
-                  <div className="text-[11px] mt-1 text-slate-500">
-                    {step.message}
-                  </div>
-                </div>
-              )} */}
-               {step.codeBlock1 && (<Block handleCopy1={handleCopy1} codeBlock1={step.codeBlock1} copyStatus1={copyStatus1} message={step.message}/>)}
+              {step.codeBlock1 && (
+                <Block
+                  handleCopy1={handleCopy1}
+                  codeBlock1={step.codeBlock1}
+                  copyStatus1={copyStatus1}
+                  message={step.message}
+                />
+              )}
 
               {step.image && (
-                <div className="mt-4  w-[90%] border-2 border-primary rounded-md ">
+                <div className="mt-4 w-[98%] border-2 border-primary rounded-md">
                   <img
                     src={step.image}
                     alt={step.alt}
-                    className="max-h-[180px] w-full"
+                    className="max-h-[250px] w-full"
                   />
-                </div>
-              )}
-              {step.inputBox && (
-                <div>
-                  <div className="text-[12px] mt-3 text-slate-500">
-                    {step.message}
-                  </div>
-                  <div className="mt-1 w-[380px]   border-2 border-primary rounded-md ">
-                    <input
-                      type="text"
-                      value={arnRole}
-                      onChange={(e) => setarnRole(e.target.value)}
-                      className="w-full indent-3 h-13 text-md"
-                      placeholder={step.message}
-                    />
-                  </div>
-                  {error && (
-                    <div className="text-red-700 text-[12px] mt-2">
-                      This feild is required
-                    </div>
-                  )}
                 </div>
               )}
             </li>
           ))}
         </ol>
 
-        <div className="flex justify-between px-10 mt-5">
-          <button
-            type="submit"
-            className="w-[130px] h-10 grid place-content-center bg-white border  border-primary text-primary rounded-md hover:bg-primary hover:text-white  ease-in-out duration-300"
-          >
-            Cancel
-          </button>
+        <div className="flex justify-end px-10 mt-5">
           <div className="flex gap-10">
             <button
               type="submit"
-              className="w-[130px] h-10 grid place-content-center bg-white border  border-primary text-primary rounded-md hover:bg-primary hover:text-white  ease-in-out duration-300"
+              className="w-[330px] h-10 grid place-content-center bg-primary border border-primary text-white rounded-md hover:bg-white hover:text-primary ease-in-out duration-300"
             >
-              Back
+              Next-Add Customer Managed Policies
             </button>
-            <Link to={"/dashboard/onboard/add2"}>
-              <button
-                type="submit"
-                className="w-[330px] h-10 grid place-content-center bg-primary border  border-primary text-white rounded-md hover:bg-white hover:text-primary  ease-in-out duration-300"
-              >
-                Next-Add Customer Managed Policies
-              </button>
-            </Link>
           </div>
         </div>
       </form>

@@ -23,7 +23,7 @@ import Loading from "../../commonComponent/Loading";
 const columns = [
   {
     id: "firstName",
-    label: "First Name",
+    label: "First dddName",
     symbol: (
       <div className="flex gap-2">
         <CiFilter className="scale-150" />
@@ -34,7 +34,7 @@ const columns = [
   },
   {
     id: "lastName",
-    label: "Last Name",
+    label: "Lastddd Name",
     symbol: (
       <div className="flex gap-2">
         <CiFilter className="scale-150" />
@@ -83,7 +83,6 @@ export default function UserListing() {
         const response = await getAllUsers("/user");
         console.log("Fetched Users:", response);
         if (response.userResponse) {
-          console.log("Setting rows data:", response.userResponse);
           setLoading(false);
           setRowsData(response.userResponse || []);
         }
@@ -112,7 +111,7 @@ export default function UserListing() {
     }
   };
   if(loading){
-   return <Loading className="z-50 "/>
+   return<div className="w-full h-screen grid place-content-center"> <Loading className="z-50 "/></div>
   }
 
   return (
@@ -145,12 +144,8 @@ export default function UserListing() {
                 Add New User
               </Link>
             </div>
-            {/* <div className="w-40 flex justify-center items-center gap-2 "> <RxReset className='mb-1' /> Reset Filter</div> */}
           </div>
-          {/* <div className='flex  gap-2  '>
-            <div className='border text-white bg-black w-35 flex justify-center items-center rounded-full font-bold'>Active(20)</div>
-            <div className="w-30 flex justify-center items-center"> All</div>
-          </div> */}
+         
         </div>
         <TableContainer
           sx={{
@@ -181,7 +176,6 @@ export default function UserListing() {
                     >
                       <div className=" flex items-center justify-between ">
                         <div>{column.label}</div>
-                        {column.symbol}
                       </div>
                     </TableCell>
                   );

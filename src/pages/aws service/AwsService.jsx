@@ -7,9 +7,7 @@ function AwsService() {
   const arr = [ec2data, rdsData, asgData];
 
   const [data, setData] = useState(arr[0]);
-  const handledataChange = (index) => {
-    // Logic to handle data change based on index
-  };
+  
 
   return (
     <div className=" mt-10 ml-7 ">

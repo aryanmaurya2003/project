@@ -1,7 +1,6 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import UserListing from "../pages/user management/UserListing";
-import UserCreation from "../pages/user management/userCreation";
 import UserEdit from "../pages/user management/userEdit";
 import UserLayout from "../layout/UserLayout";
 import ProtectedRoutes from "../commonComponent/ProtectedRoutes";

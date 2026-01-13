@@ -3,12 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
  const LoaderSlice=createSlice({
     name:"loader",
     initialState:{
-        value:true
+        value:false
     },
     reducers:{
-        toggleChange:(state)=>{
-            console.log("the value is this")
-            state.value=!state.value
+        LoaderChange:(state)=>{
+                state.value=!state.value
         }
     }
 })

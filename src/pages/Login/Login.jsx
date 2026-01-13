@@ -7,6 +7,7 @@ import { loginApi } from "../../API/Login.api";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { userChange } from "../../feature/User/UserSlice";
+import { LoaderChange } from "../../feature/loading/loading";
 
 function Login() {
   const navigate = useNavigate();
@@ -34,9 +35,7 @@ function Login() {
     return Object.keys(newErrors).length === 0;
   };
   const formHandler=(e)=>{
-    console.log("the form is misbehaving")
     e.preventDefault();
-
   }
 
   const clickhandler = async (e) => {
@@ -49,7 +48,7 @@ function Login() {
           })
           console.log("the error is this", response);
           if (response.status==401) {
-    toast.error(response.response.data.message)
+          toast.error(response.response.data.message)
           } else if (response.status == 200) {
             toast.success("Login Successful");
             const user = {
@@ -61,7 +60,16 @@ function Login() {
             localStorage.setItem("userData", JSON.stringify(user));
             localStorage.setItem("token", JSON.stringify(response.data.jwt));
             dispatch(userChange(user));
-            navigate("/dashboard/user");
+            dispatch(LoaderChange(false));
+            if(user.role==="admin" || user.role==="read_Only"){
+               navigate("/dashboard/user");
+            }
+            else{
+              navigate("/dashboard/costExplorer?group=SERVICE");
+            }
+
+
+           
           }
         }
   };

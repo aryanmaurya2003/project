@@ -6,47 +6,8 @@ import AssignList from "./AssignList";
 import { useMemo } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-const formFields = [
-  {
-    label: "First Name",
-    id: "firstName",
-    type: "text",
-    name: "firstName",
-    placeholder: "Enter First Name",
-    errorMessage: "First Name is required",
-    required: false,
-  },
-  {
-    label: "Last Name",
-    id: "lastName",
-    type: "text",
-    name: "lastName",
-    placeholder: " Last Name",
-    errorMessage: "Last Name is required",
-    required: false,
-  },
-  {
-    label: "Email",
-    id: "email",
-    type: "email",
-    name: "email",
-    placeholder: "Enter Email",
-    errorMessage: "Valid email is required",
-    required: false,
-  },
-];
+import { formFields ,roleOptions} from "./userData";
 
-const roleOptions = {
-  label: "Select Role",
-  id: "selectRole",
-  name: "role",
-  errorMessage: "Please Select any Option",
-  options: [
-    { label: "Admin", value: "admin" },
-    { label: "Read Only", value: "read_Only" },
-    { label: "Customer", value: "customer" },
-  ],
-};
 
 function UserForm() {
   const [formData, setFormData] = useState({
@@ -124,12 +85,13 @@ function UserForm() {
 
       if (response.status === 200 || response.status === 202) {
         toast.success(response.data.message);
-      } else if (response.status == 400 || response.status == 401) {
+      } else if (response.status == 401) {
+        
         navigate("/");
       } else {
         console.log("the data error", response);
         toast.error(
-          response.error.response.data.message || response.error.message
+          response.response.data.message || response.error.message
         );
       }
     }

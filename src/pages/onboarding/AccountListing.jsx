@@ -4,6 +4,7 @@ import { RiFolderOpenFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { getAllAccountList } from "../../API/account.api";
 import { toast } from "react-toastify";
+import Loading from "../../commonComponent/Loading";
 
 function EmptyList() {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ function EmptyList() {
 function AccountListing() {
   const [accounts, setAccounts] = useState([]);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleClick = () => {
     navigate("/dashboard/onboard/add");
@@ -47,17 +49,28 @@ function AccountListing() {
 
   useEffect(() => {
     async function fetchAccounts() {
+      setLoading(true);
       const responseData = await getAllAccountList();
       if (responseData.status == 200) {
         setAccounts(responseData.data.accounts);
         toast.success(responseData.data.message);
+        setLoading(false);
       } else if (responseData.status == 401) {
+        setLoading(false);
         toast.error(responseData.response.data.message);
         navigate("/")
       }
     }
     fetchAccounts();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full h-200 bg-white grid place-content-center">
+       <Loading className="z-50 " />
+      </div>
+    );
+  }
   
 
   return (
@@ -105,13 +118,13 @@ function AccountListing() {
                       {index + 1}
                     </td>
                     <td className="border border-gray-300 px-4 py-1 text-sm">
-                      {account.AWS_ID}
+                      {account.aws_ID}
                     </td>
                     <td className="border border-gray-300 px-4 py-1 text-sm">
-                      {account.ARN_Name}
+                      {account.arn_Name}
                     </td>
                     <td className="border border-gray-300 px-4 py-1 text-sm">
-                      {account.AccountName}
+                      {account.accountName}
                     </td>
                   </tr>
                 ))}

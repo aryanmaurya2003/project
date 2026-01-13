@@ -69,19 +69,19 @@ const onboardingSteps = [
     id: 15,
     inputBox: true,
     placeholder: "Enter aws id",
-    name: "awsid",
+    name: "awsId",
   },
   {
     id: 7,
     inputBox: true,
     placeholder: "Enter account name",
-    name: "AccountName",
+    name: "accountName",
   },
   {
     id: 8,
     inputBox: true,
     placeholder: "Enter the IAM role ARN",
-    name: "ARN_Name",
+    name: "arnName",
   },]
   },
  
@@ -103,9 +103,9 @@ function Onboarding() {
     }
   }
   return {
-    awsid: "",
-    ARN_Name: "",
-    AccountName: "",
+    awsId: "",
+    arnName: "",
+    accountName: "",
   };
 });
 
@@ -136,16 +136,16 @@ function Onboarding() {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formValue.awsid.trim()) {
-      newErrors.awsid = "AWS ID is required";
+    if (!formValue.awsId.trim()) {
+      newErrors.awsId = "AWS ID is required";
     }
     
-    if (!formValue.AccountName.trim()) {
-      newErrors.AccountName = "Account Name is required";
+    if (!formValue.accountName.trim()) {
+      newErrors.accountName = "Account Name is required";
     }
     
-    if (!formValue.ARN_Name.trim()) {
-      newErrors.ARN_Name = "IAM Role ARN is required";
+    if (!formValue.arnName.trim()) {
+      newErrors.arnName = "IAM Role ARN is required";
     } 
     
     return newErrors;
@@ -154,13 +154,14 @@ function Onboarding() {
   const handleNext = (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
-    console.log("the erroris tis ", validationErrors)
+    // console.log("the erroris tis ", validationErrors)
     
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       toast.error("please fill all the feild ")
       return;
     }
+    console.log("the form value is this --------------", formValue)
     localStorage.setItem("onboardingFormData", JSON.stringify(formValue))
     
     toast.success("Data field saved")

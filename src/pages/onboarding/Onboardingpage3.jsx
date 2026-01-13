@@ -99,12 +99,13 @@ function Onboardingpage3() {
 
     const formValue = localStorage.getItem("onboardingFormData");
     const parsedFormValue = JSON.parse(formValue);
+    console.log("the parse form is this  -----------  Form Data:", parsedFormValue);
 
     if (parsedFormValue) {
       if (
-        !parsedFormValue.awsid?.trim() ||
-        !parsedFormValue.AccountName?.trim() ||
-        !parsedFormValue.ARN_Name?.trim()
+        !parsedFormValue.awsId?.trim() ||
+        !parsedFormValue.accountName?.trim() ||
+        !parsedFormValue.arnName?.trim()
       ) {
         localStorage.removeItem("onboardingFormData");
         toast.error("please fill required field");
@@ -117,6 +118,7 @@ function Onboardingpage3() {
       return;
     }
 
+    console.log("the parse form is this    Form Data:", parsedFormValue);
 
     const response = await createAccount(parsedFormValue);
 

@@ -6,12 +6,13 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { CalendarToday, DateRange } from "@mui/icons-material";
 
 export default function DateCalendarValue({ setSelectedDate }) {
-  const [startValue, setStartValue] = useState(dayjs().subtract(3, "months"));
+  const [startValue, setStartValue] = useState(dayjs().subtract(12, "months"));
   const [endValue, setEndValue] = useState(dayjs());
 
-  useEffect(() => {
-    setSelectedDate({ startDate: startValue.format("DD MMM YYYY"), endDate: endValue.format("DD MMM YYYY") });
-  }, [startValue, endValue]);
+useEffect(() => {
+  setSelectedDate({ startDate: startValue.format("YYYY-MM-DD"), endDate: endValue.format("YYYY-MM-DD") });
+}, [startValue, endValue]);
+
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 max-w-2xl mx-auto w-[800px] absolute z-50 right-[5px] top-[59px] ">

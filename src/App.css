@@ -1,0 +1,25 @@
+.fc-tooltip {
+  width: 230px;
+  font-size: 11px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.fc-tooltip-header {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.fc-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0;
+}
+
+.fc-tooltip-footer {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}

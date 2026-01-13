@@ -227,20 +227,25 @@ const handleSubmit = (e) => {
   e.preventDefault();
 
   const formValue = localStorage.getItem("onboardingFormData");
+  console.log("the form value is this --------------", formValue)
   
   if (formValue) {
     const parsedFormValue = JSON.parse(formValue);
+      console.log("the-=------------------------", parsedFormValue);
+
     if (
-      !parsedFormValue.awsid?.trim() ||
-      !parsedFormValue.AccountName?.trim() ||
-      !parsedFormValue.ARN_Name?.trim()
+      !parsedFormValue.awsId?.trim() ||
+      !parsedFormValue.accountName?.trim() ||
+      !parsedFormValue.arnName?.trim()
     ) {
+
+
       localStorage.removeItem("onboardingFormData");
       toast.error("please fill required field");
       navigate("/dashboard/onboard/add");
       return;
     }
-  } else {
+  } else {  
     toast.error("please fill required field");
     navigate("/dashboard/onboard/add");
     return;

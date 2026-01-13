@@ -1,86 +1,109 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import FusionCharts from "fusioncharts";
 import Charts from "fusioncharts/fusioncharts.charts";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import ReactFusioncharts from "react-fusioncharts";
+import { PostCostExplorerData } from "../../API/costExplorer";
+import { useNavigate, useLocation } from "react-router-dom";
+import Loading from "../../commonComponent/Loading";
+import { useRef } from "react";
+import { useSelector } from "react-redux";
 
 Charts(FusionCharts);
 FusionTheme(FusionCharts);
 
-function AwsCostStackedColumnChart({selectedChart,}) {
+
+function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selectedDate }) {
   const chartRef = useRef(null);
   const containerRef = useRef(null);
+  const navigate=useNavigate();
+  const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const groupBy = queryParams.get("group");
+  const accountList=useSelector((state)=>state.accounts.value.accountsList);
+  
+
 
   useEffect(() => {
     const resizeChart = () => {
       if (chartRef.current?.chartObj && containerRef.current) {
-        const width = containerRef.current.offsetWidth;
-        chartRef.current.chartObj.resizeTo(width, 400);
+        chartRef.current.chartObj.resizeTo(
+          containerRef.current.offsetWidth,
+          400
+        );
       }
     };
 
     const observer = new ResizeObserver(resizeChart);
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
+    if (containerRef.current) observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const chartData = {
-    chart: {
-      caption: "AWS Cost Breakdown",
-      subcaption: "Daily Stacked Cost for Last 14 Days",
-      xAxisName: "Date",
-      yAxisName: "Cost (USD)",
-      numberPrefix: "$",
-      theme: "fusion",
-      exportEnabled: "1",
-      showLegend: "1",
-      legendPosition: "bottom",
-      animation: "0",
-      usePlotGradientColor: "0",
-      showValues: "0",
-      plotSpacePercent: "20",
-    },
-    categories: [{
-      category: [
-        { label: "Jan 01" }, { label: "Jan 02" }, { label: "Jan 03" }, { label: "Jan 04" },
-        { label: "Jan 05" }, { label: "Jan 06" }, { label: "Jan 07" }, { label: "Jan 08" },
-        { label: "Jan 09" }, { label: "Jan 10" }, { label: "Jan 11" }, { label: "Jan 12" },
-        { label: "Jan 13" }, { label: "Jan 14" }
-      ],
-    }],
-    dataset: [
-      {
-        seriesname: "EC2 Compute Cost",
-        data: [
-          { value: "12" }, { value: "14" }, { value: "16" }, { value: "15" },
-          { value: "18" }, { value: "20" }, { value: "22" }, { value: "21" },
-          { value: "23" }, { value: "25" }, { value: "27" }, { value: "28" },
-          { value: "26" }, { value: "24" }
-        ],
-      },
-      {
-        seriesname: "S3 Storage Cost",
-        data: [
-          { value: "4" }, { value: "5" }, { value: "6" }, { value: "6" },
-          { value: "7" }, { value: "8" }, { value: "8" }, { value: "9" },
-          { value: "9" }, { value: "10" }, { value: "11" }, { value: "12" },
-          { value: "12" }, { value: "11" }
-        ],
-      },
-      {
-        seriesname: "Lambda Cost",
-        data: [
-          { value: "2" }, { value: "3" }, { value: "3" }, { value: "4" },
-          { value: "5" }, { value: "6" }, { value: "7" }, { value: "6" },
-          { value: "7" }, { value: "8" }, { value: "9" }, { value: "10" },
-          { value: "9" }, { value: "8" }
-        ],
-      },
-    ],
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      setTable([]);
+      setLoading(true);
+      setError(null);
+      
+        const response = await PostCostExplorerData(groupBy, {
+          accountId:accountList,
+          startDate: selectedDate.startDate,
+          endDate: selectedDate.endDate,
+          filters: Allfilters,
+        });
+        console.log("Stacked Column Chart Data Response:", response);
+     
+        if (response.status === 200) {
+          const finalData = buildTooltipChartData(
+            response.data.chartData
+          );
+          setChartData(finalData);
+          setTable(response.data.tableData);
+          setLoading(false)
+        }else if(response.status===401){
+          navigate("/")
+        } 
+    };
+
+    fetchData();
+  }, [groupBy, Allfilters,selectedDate,accountList]);
+  console.log("the sekected date is this",selectedDate)
+
+  if (loading) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-full h-96 flex items-center justify-center"
+      >
+        <Loading />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-full h-96 flex items-center justify-center text-red-500"
+      >
+        {error}
+      </div>
+    );
+  }
+
+  if (!chartData) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-full h-96 flex items-center justify-center text-gray-500"
+      >
+        No data available
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="w-full">
@@ -97,3 +120,71 @@ function AwsCostStackedColumnChart({selectedChart,}) {
 }
 
 export default AwsCostStackedColumnChart;
+
+
+function buildTooltipChartData(chartData) {
+  const categories = chartData.categories[0].category;
+  const dataset = chartData.dataset;
+
+  const totalsByIndex = categories.map((_, idx) =>
+    dataset.reduce(
+      (sum, s) => sum + Number(s.data[idx]?.value || 0),
+      0
+    )
+  );
+
+  const enhancedDataset = dataset.map((series, seriesIdx) => {
+    const isLastSeries = seriesIdx === dataset.length - 1;
+
+    return {
+      ...series,
+      data: series.data.map((point, idx) => {
+        const value = Number(point.value || 0);
+        const total = totalsByIndex[idx];
+        const percent = total
+          ? ((value * 100) / total).toFixed(2)
+          : "0.00";
+
+        return {
+          value: point.value,
+          toolText: `
+            <div class="fc-tooltip">
+
+              
+              ${seriesIdx===0 ?`<div class="fc-tooltip-header">
+                ${categories[idx].label} </div>`:""}
+
+              <!-- ROW -->
+              <div class="fc-tooltip-row">
+                <span>${series.seriesname}</span>
+                <b>$${value.toLocaleString()} (${percent}%)</b>
+              </div>
+
+              <!-- FOOTER (ONLY ONCE) -->
+              ${
+                isLastSeries
+                  ? `
+                    <div class="fc-tooltip-footer">
+                      <span>Total</span>
+                      <b>$${total.toLocaleString()}</b>
+                    </div>
+                  `
+                  : ""
+              }
+
+            </div>
+          `,
+        };
+      }),
+    };
+  });
+
+  return {
+    ...chartData,
+    chart: {
+      ...chartData.chart,
+      plotToolText: "",
+    },
+    dataset: enhancedDataset,
+  };
+}

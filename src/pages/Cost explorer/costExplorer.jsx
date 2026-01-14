@@ -9,24 +9,11 @@ import { IoAnalyticsOutline } from "react-icons/io5";
 import { LuChartColumnStacked } from "react-icons/lu";
 import AwsCostStackedColumnChart from "./stackChart";
 import CostTable from "./CostTable";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { getColumnData } from "../../API/costExplorer";
-const filters = [
-  { id: 1, name: "Service", value: "SERVICE" },
-  { id: 2, name: "Api Operation", value: "API_OPERATION" },
-  { id: 3, name: "Usage Type", value: "USAGE_TYPE" },
-  { id: 4, name: "Instace Type", value: "INSTANCE_TYPE" },
-  { id: 5, name: "Platform", value: "PLATFORM" },
-  { id: 6, name: "Region", value: "REGION" },
-  { id: 7, name: "Usage Type Group", value: "USAGE_TYPE_GROUP" },
-  { id: 8, name: "Purchase Option", value: "PURCHASE_OPTION" },
-  { id: 9, name: "Resource", value: "RESOURCE" },
-  { id: 10, name: "Availability Zone", value: "AVAILABILITY_ZONE" },
-  { id: 11, name: "Tenancy", value: "TENANCY" },
-  { id: 12, name: "Legal Entity", value: "LEGAL_ENTITY" },
-  { id: 13, name: "Billing Entity", value: "BILLING_ENTITY" },
-];
-const arr = ["mscolumn2d", "msline", "stackedcolumn2d"];
+import {filters,arr} from "./cost";
+import { toast } from "react-toastify";
+
 
 function CostExplorer() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,9 +37,14 @@ function CostExplorer() {
   const dropdownRef = useRef(null);
   const datedownRef = useRef(null);
   const [table, setTable] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
   const [searchParms]=useSearchParams();
   const typeParams=searchParms.get("group")?searchParms.get("group"):"SERVICE";
-  console.log("type of cost explorer:", typeParams);
+  
+  const tableName=filters.find((e)=>e.value===typeParams)
+  console.log("the table name is this",tableName.name)
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -86,6 +78,12 @@ function CostExplorer() {
     if (response.status == 200) {
       setColumnData(response.data.filters);
     } else if (response.status == 401) {
+      console.log("the 401 error is this cost explorer",response)
+      toast.error(response.response.data.message)
+     navigate("/")
+    } 
+    else{
+      toast.error(response.data.message)
     }
   };
 
@@ -105,7 +103,7 @@ function CostExplorer() {
           <div className="font-bold text-md flex  ml-3 items-center h-7 relative  ">
             Group By :
             <div className="font-bold ml-3 min-w-[100px] px-2 bg-blue-800 text-white  text-sm h-full flex items-center justify-center  rounded-md ">
-              {/* {selectedFilter.name} */}{typeParams}
+            {tableName.name}
             </div>
             <div className="border-l-2 border-slate-400 ml-3 h-7"></div>
             {filters
@@ -116,7 +114,7 @@ function CostExplorer() {
                   key={filter.id}
                   className="ml-3 min-w-20 px-2 bg-slate-200 hover:bg-blue-800 hover:text-white text-blue-800 text-[12px] h-full flex items-center justify-center rounded-md cursor-pointer ease-in-out duration-200  "
                   onClick={() => {setSelectedFilter(filter),setTable([])
-}}
+                  }}
                 >
                   <Link to={`/dashboard/costExplorer?group=${filter.value}`}>
                     {" "}
@@ -152,7 +150,6 @@ function CostExplorer() {
                       key={filter.id}
                       className="ml-3 min-w-20   text-[13px] h-full font-light mt-3  rounded-md cursor-pointer ease-in-out duration-200"
                       onClick={() => {
-                        console.log("filter clicke*************************************d:", filter);
                         setSelectedFilter(filter), setTable([])
                       }}
                     >
@@ -246,6 +243,8 @@ function CostExplorer() {
                 setTable={setTable}
                 Allfilters={Allfilters}
                 selectedDate={selectedDate}
+                loading={loading}
+                setLoading={setLoading}
               />
             </div>
 
@@ -254,7 +253,8 @@ function CostExplorer() {
             </div>
 
             <div className="m-4  min-h-[400px]">
-              <CostTable table={table}  groupBy={typeParams}/>
+              <CostTable table={table}  groupBy={tableName.name} loading={loading}
+                setLoading={setLoading}/>
             </div>
           </div>
           <div

@@ -1,19 +1,20 @@
 import { Route } from "react-router-dom";
 import OnboardingLayout from "../layout/Onboarding.Layout";
-import Onboarding from "../pages/onboarding/Onboarding";
+import Onboarding from "../pages/onboarding/Onboarding.jsx";
 import OnboadingPage2 from "../pages/onboarding/OnboadingPage2";
 import AccountListing from "../pages/onboarding/AccountListing";
 import ProtectedRoutes from "../commonComponent/ProtectedRoutes";
 import Onboardingpage3 from "../pages/onboarding/Onboardingpage3";
+import RoleProtected from "../commonComponent/RoleProtected";
 
 const OnboardingRoutes = (
   <>
     <Route
       path="onboard"
       element={
-        <ProtectedRoutes>
+        <ProtectedRoutes><RoleProtected>
           <OnboardingLayout />
-        </ProtectedRoutes>
+        </RoleProtected></ProtectedRoutes>
       }
     >
       <Route path="" element={<AccountListing />} />

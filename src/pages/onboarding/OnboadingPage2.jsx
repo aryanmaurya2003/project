@@ -1,209 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import iamRole from "../../assets/iamrole.png";
+// import iamRole from "../../assets/iamrole.png";
 import CodeBlock from "../../commonComponent/CodeBlock";
 import Block from "../../commonComponent/Block";
 import { toast } from "react-toastify";
-
-const onboardingSteps = [
-  {
-    id: 1,
-    description: [
-      { type: "text", value: "Go to " },
-      { type: "link", value: "Create policy ", link: "#" },
-      { type: "text", value: "page" },
-    ],
-  },
-  {
-    id: 2,
-    description: [
-      {
-        type: "text",
-        value:
-          "Click on the JSON tab and paste the policy below, then click on Next:",
-      },
-    ],
-    codeBlock: `{
-  "Version": "2025-11-25",
-  "Statement": [
-    {
-      "Sid": "costAudit",
-      "effect": "Allow",
-      "Action": [
-      "dms:Describe*",
-      "dms:List*",
-      "kafka:Describe*",
-      "kafka:Get*",
-      "kafka:post*"
-      ]
-    }
-  ]
-}`,
-  },
-  {
-    id: 3,
-    description: [
-      {
-        type: "text",
-        value:
-          "In the name field, enter the policy name below and click Create Policy:",
-      },
-    ],
-    codeBlock1: `cktuner-CostAuditPolicy`,
-  },
-  {
-    id: 4,
-    description: [
-      { type: "text", value: "Again, go to the  " },
-      { type: "link", value: "Create policy ", link: "#" },
-      { type: "text", value: " page" },
-    ],
-  },
-  {
-    id: 5,
-    description:
-      "Click on the json Tab and paste the following policy and click on the next:",
-    codeBlock: `{
-  "Version": "2025-11-25",
-  "Statement": [
-    {
-      "Sid": "costAudit",
-      "effect": "Allow",
-      "Action": [
-      "dms:Describe*",
-      "dms:List*",
-      "kafka:Describe*",
-      "kafka:Get*",
-      "kafka:post*"
-      ]
-    }
-  ]
-}`,
-  },
-  {
-    id: 6,
-    description:
-      "In the main field , enter below mentioned policy name and click on Create Policy",
-    codeBlock1: `cktuner-SecAuditPolicy`,
-  },
-  {
-    id: 7,
-    description: [
-      { type: "text", value: "Again, go to the  " },
-      { type: "link", value: "Create policy ", link: "#" },
-      { type: "text", value: " page" },
-    ],
-  },
-  {
-    id: 8,
-    description:
-      "Click on the json Tab and paste the following policy and click on the next:",
-    codeBlock: `{
-  "Version": "2025-11-25",
-  "Statement": [
-    {
-      "Sid": "costAudit",
-      "effect": "Allow",
-      "Action": [
-      "dms:Describe*",
-      "dms:List*",
-      "kafka:Describe*",
-      "kafka:Get*",
-      "kafka:post*"
-      ]
-    }
-  ]
-}`,
-  },
-  {
-    id: 9,
-    description: [
-      {
-        type: "text",
-        value:
-          "In the name field, enter the policy name below and click Create Policy:",
-      },
-    ],
-    codeBlock1: `cktuner-TunerReadEssentials`,
-  },
-  {
-    id: 10,
-    description: [
-      { type: "text", value: "Go to " },
-      { type: "link", value: "CK-Tuner-Role ", link: "#" },
-    ],
-    image: iamRole,
-    alt: "Error in loading image",
-  },
-  {
-    id: 11,
-    description:
-      "In permissioin policies, Click on Add permision > Attack Policies",
-    image: iamRole,
-    alt: "Error in loading image",
-  },
-  {
-    id: 12,
-    description:
-      "Filter by type > Customer managed then search for cktuner-costAuditPolicy,ckTuner-SecAuditPolicy,cktuner-TunerReadEssential and select them",
-    image: iamRole,
-    alt: "Error in loading image",
-  },
-  {
-    id: 13,
-    description: [
-      { type: "text", value: "Now, " },
-      { type: "text", value: "Click on Add Permission " },
-    ],
-  },
-  {
-    id: 14,
-    description: [
-      { type: "text", value: "In permission Policies, Click on " },
-      { type: "text", value: " Add Permission > Create Inline Policy " },
-    ],
-    image: iamRole,
-    alt: "Error in loading image",
-  },
-  {
-    id: 15,
-    description: "Click on the json Tab and paste the following policy ",
-    codeBlock: `{
-  "Version": "2025-11-25",
-  "Statement": [
-    {
-      "Sid": "costAudit",
-      "effect": "Allow",
-      "Action": [
-      "dms:Describe*",
-      "dms:List*",
-      "kafka:Describe*",
-      "kafka:Get*",
-      "kafka:post*"
-      ]
-    }
-  ]
-}`,
-  },
-  {
-    id: 16,
-    description: [
-      { type: "text", value: "Now, " },
-      { type: "text", value: "Click on Review Policy " },
-    ],
-  },
-  {
-    id: 17,
-    description: [
-      {
-        type: "text",
-        value:
-          "In the Name field, enter the below mentioned policy name and click on ",
-      },
-      { type: "text", value: "Create policy " },
-    ],
-  },
-];
+import { onboardingSteps } from "./OnboardingData";
 
 function OnboardingPage2() {
   const [error, setErrors] = useState(false);
@@ -227,19 +28,15 @@ const handleSubmit = (e) => {
   e.preventDefault();
 
   const formValue = localStorage.getItem("onboardingFormData");
-  console.log("the form value is this --------------", formValue)
   
   if (formValue) {
     const parsedFormValue = JSON.parse(formValue);
-      console.log("the-=------------------------", parsedFormValue);
 
     if (
       !parsedFormValue.awsId?.trim() ||
       !parsedFormValue.accountName?.trim() ||
       !parsedFormValue.arnName?.trim()
     ) {
-
-
       localStorage.removeItem("onboardingFormData");
       toast.error("please fill required field");
       navigate("/dashboard/onboard/add");
@@ -250,7 +47,6 @@ const handleSubmit = (e) => {
     navigate("/dashboard/onboard/add");
     return;
   }
-
   navigate("/dashboard/onboard/add3");
 };
 
@@ -258,6 +54,10 @@ const handleSubmit = (e) => {
   const handleBack = () => {
     navigate(-1);
   };
+  const handleCancel = () => {
+    localStorage.removeItem("onboardingFormData");
+    navigate("/dashboard/onboard/add");
+  }
 
   return (
     <div className="p-8">
@@ -292,7 +92,6 @@ const handleSubmit = (e) => {
                   : step.description}
               </div>
 
-              {/* Code blocks */}
               {step.codeBlock && (
                 <CodeBlock
                   handleCopy={handleCopy}
@@ -323,9 +122,15 @@ const handleSubmit = (e) => {
           ))}
         </ol>
 
-        <div className="flex justify-end px-10 mt-5">
-          
+        <div className="flex justify-between px-10 mt-5">
 
+           <button
+            type="button"
+            onClick={handleCancel}
+            className="w-[130px] h-10 grid place-content-center bg-white border border-primary text-primary rounded-md hover:bg-primary hover:text-white duration-300"
+          >
+            Cancel
+          </button>
           <div className="flex gap-10">
             <button
               type="button"

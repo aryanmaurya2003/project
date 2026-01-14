@@ -6,72 +6,7 @@ import CodeBlock from "../../commonComponent/CodeBlock";
 import Block from "../../commonComponent/Block";
 import { createAccount } from "../../API/account.api";
 
-const onboardingSteps = [
-  {
-    id: 1,
-    description: [
-      { type: "text", value: "Go to " },
-      { type: "link", value: "S3 Console ", link: "#" },
-      { type: "text", value: "and click Create bucket" },
-    ],
-    image: iamRole,
-    alt: "S3 Console Screenshot",
-  },
-  {
-    id: 2,
-    description: "Enter the bucket name as shown below:",
-    codeBlock1: `ck-tuner-bucket-${Date.now()}`,
-    message: "Click anywhere in the box to copy the bucket name",
-  },
-  {
-    id: 3,
-    description: "Configure bucket settings with the following JSON policy:",
-    codeBlock: `{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowCloudKeeperAccess",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::951485052809:root"
-      },
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject"
-      ],
-      "Resource": "arn:aws:s3:::your-bucket-name/*"
-    }
-  ]
-}`,
-  },
-  {
-    id: 4,
-    description: "Enable versioning and server-side encryption for the bucket.",
-    image: iamRole,
-    alt: "Bucket settings screenshot",
-  },
-  {
-    id: 5,
-    description: [
-      { type: "text", value: "Click " },
-      { type: "text", value: "Create bucket " },
-      { type: "text", value: "to complete the setup" },
-    ],
-  },
-  {
-    id: 6,
-    description: "Copy the bucket ARN from the bucket properties:",
-    image: iamRole,
-    alt: "Bucket ARN location",
-  },
-  {
-    id: 7,
-    description: "Verify bucket access by uploading a test file.",
-    image: iamRole,
-    alt: "Upload test file",
-  },
-];
+import { onboardingSteps3 } from "./OnboardingData";
 
 function Onboardingpage3() {
   const navigate = useNavigate();
@@ -128,10 +63,14 @@ function Onboardingpage3() {
       navigate("/dashboard/onboard");
     }
     else{
-      console.log("the error is this----------------------------------",response)
-      toast.error("something went wrong")
+      toast.error(response.response.data.message || response.error.message);
     }
   };
+
+  const handleCancel = () => {
+    localStorage.removeItem("onboardingFormData");
+    navigate("/dashboard/onboard/add");
+  }
 
   return (
     <div className="p-8">
@@ -142,7 +81,7 @@ function Onboardingpage3() {
 
       <form onSubmit={handleSubmit}>
         <ol className="w-[95%] mt-10 space-y-8 ml-10 bg-white p-10">
-          {onboardingSteps.map((step, index) => (
+          {onboardingSteps3.map((step, index) => (
             <li key={step.id} className="relative pl-15">
               <span className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-slate-400 text-white font-bold mt-0.5">
                 {index + 1}
@@ -199,6 +138,7 @@ function Onboardingpage3() {
         <div className="flex justify-between px-10 mt-5">
           <button
             type="button"
+            onClick={handleCancel}
             className="w-[130px] h-10 grid place-content-center bg-white border border-primary text-primary rounded-md hover:bg-primary hover:text-white duration-300"
           >
             Cancel

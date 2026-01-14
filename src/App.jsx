@@ -12,14 +12,11 @@ import Loading from "./commonComponent/Loading";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
+import LoginProtected from "./commonComponent/LoginProtected";
 
 function App() {
-// const [loading,setLoading]=React.useState(false);
-// useSelector((state)=>{
-//   if(state.loading.value!==loading){
-//     setLoading(state.loading.value)
-//   }
-// })
+
+
 
 
   return (
@@ -27,7 +24,7 @@ function App() {
       {/* {loading && <div className="w-full h-screen absolute grid place-content-center z-50 bg-[rgba(255,255,255,0.8)]" ><Loading /></div>} */}
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LoginProtected><Login /></LoginProtected>} />
         
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<Navigate to="user" replace/>}/>

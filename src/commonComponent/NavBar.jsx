@@ -11,6 +11,8 @@ import { LoaderChange } from "../feature/loading/loading";
 import { getAllAccountList } from "../API/account.api";
 import { accountsChange } from "../feature/Accounts/Accounts";
 import Loading from "./Loading";
+import { logoutApi } from "../API/Login.api";
+import { toast } from "react-toastify";
 function NavBar() {
   const [accoutList, setAccountList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -68,13 +70,23 @@ function NavBar() {
   const value = useSelector((state) => state.user.value);
   //   console.log("the value is this ", value);
 
-  const handleLogout = () => {
+ const handleLogout = async (e) => {
+  e.preventDefault(); // Prevent default browser behavior
+  e.stopPropagation(); // Stop event bubbling
+
+  const response = await logoutApi();
+
+  if(response.status === 200){
+    toast.success("Logout successful");
     localStorage.removeItem("token");
     localStorage.removeItem("userAuthenticated");
     localStorage.removeItem("userData");
-    setTimeout(() => {}, 2000);
     navigate("/");
-  };
+  } else {
+    toast.error("Error in logout");
+  }
+};
+
   const handleOpenAccount = () => {
     // fetchAccounts();
     setIsOpen(!isOpen);
@@ -161,13 +173,14 @@ function NavBar() {
           </div>
         </div>
       </div>
-      <div className="h-full w-[10%] flex items-center" onClick={handleLogout}>
-        <Link to={"/"}>
-          <div className="w-[120px] h-10 ml-3 border-2 text-blue-700 flex  justify-center items-center font-bold text-[16px] rounded-md">
-            <VscSignOut className="scale-150 mr-3" />
-            Logout
-          </div>
-        </Link>
+      <div className="h-full w-[10%] flex items-center">
+        <button
+          onClick={handleLogout}
+          className="w-[120px] h-10 ml-3 border-2 text-blue-700 flex justify-center items-center font-bold text-[16px] rounded-md bg-transparent cursor-pointer"
+        >
+          <VscSignOut className="scale-150 mr-3" />
+          Logout
+        </button>
       </div>
     </div>
   );

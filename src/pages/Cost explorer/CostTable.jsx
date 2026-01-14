@@ -1,18 +1,27 @@
 import React from "react";
 import Loading from "../../commonComponent/Loading";
 
-function CostTable({ table, groupBy }) {
+function CostTable({ table, groupBy ,loading,setLoading}){
 
-console.log("Cost Table Data:", groupBy);
+console.log("Cost Table Data:", loading,table);
 
-  if (!table || !table.data || !table.months) {
+
+
+  if (!table || !table.data || !table.months ) {
+     if (loading) {
     return (
-    <div className="w-full h-[300px] grid place-content-center">
+      <div className="w-full h-[300px] flex items-center justify-center">
         <Loading />
       </div>
-    );
+    );  }
+  if(table.length === 0){
+  return (
+    <div className="w-full h-[300px] grid place-content-center text-gray-500">
+      No data available
+    </div>
+  );
   }
-
+}
   const { data, months } = table;
 
   return (

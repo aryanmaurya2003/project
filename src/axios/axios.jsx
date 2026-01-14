@@ -1,9 +1,9 @@
 import axios from "axios";
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const app = axios.create({
-  baseURL: "http://localhost:8080",
-  // timeout: 3000,
-  withCredentials: true,
+  baseURL: baseUrl,
+  
 });
 
 app.interceptors.request.use(

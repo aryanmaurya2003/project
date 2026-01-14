@@ -8,17 +8,18 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Loading from "../../commonComponent/Loading";
 import { useRef } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 Charts(FusionCharts);
 FusionTheme(FusionCharts);
 
 
-function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selectedDate }) {
+function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selectedDate,loading,setLoading }) {
   const chartRef = useRef(null);
   const containerRef = useRef(null);
   const navigate=useNavigate();
   const [chartData, setChartData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -54,7 +55,6 @@ function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selected
           endDate: selectedDate.endDate,
           filters: Allfilters,
         });
-        console.log("Stacked Column Chart Data Response:", response);
      
         if (response.status === 200) {
           const finalData = buildTooltipChartData(
@@ -64,13 +64,19 @@ function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selected
           setTable(response.data.tableData);
           setLoading(false)
         }else if(response.status===401){
+          console.log("the 401 error is this stackchart",response)
+          toast.error(response.response.data.message)
           navigate("/")
-        } 
+        } else if(response.status===400){
+          toast.error(response.response.data.message)
+                setTable([]);
+                setChartData(null);
+                 setLoading(false);
+        }
     };
 
     fetchData();
   }, [groupBy, Allfilters,selectedDate,accountList]);
-  console.log("the sekected date is this",selectedDate)
 
   if (loading) {
     return (

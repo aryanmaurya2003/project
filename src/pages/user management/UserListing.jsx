@@ -73,9 +73,11 @@ export default function UserListing() {
   const navigate = useNavigate();
   const data = useSelector((state) => state.user.value.role);
 
-  if (data == "customer") {
-    navigate("/");
+  useEffect(() => {
+  if (data === "customer") {
+    navigate("/dashboard/costExplorer?group=API_OPERATION");
   }
+}, [data, navigate]);
 
   useEffect(() => {
     async function fetchUsers() {

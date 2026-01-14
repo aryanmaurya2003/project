@@ -15,7 +15,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setErrors] = useState({});
   const dispatch = useDispatch();
-
+ 
   const validateFeild = (email, password) => {
     const newErrors = {};
 
@@ -67,9 +67,6 @@ function Login() {
             else{
               navigate("/dashboard/costExplorer?group=SERVICE");
             }
-
-
-           
           }
         }
   };
@@ -99,7 +96,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {error.email && <div>{error.email}</div>}
+            {error.email && <div className="text-red-700 text-sm mt-1">{error.email}</div>}
 
             <label
               htmlFor="password "
@@ -114,7 +111,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {error.password && <div>{error.password}</div>}
+            {error.password && <div className="text-red-700 text-sm mt-1">{error.password}</div>}
           </form>
           <button
             className="login w-full h-[45px]   skyBackColor text-white mt-15  rounded-lg text-[14px]"

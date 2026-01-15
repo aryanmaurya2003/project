@@ -48,6 +48,7 @@ function AwsCostStackedColumnChart({
   }, []);
 
   useEffect(() => {
+    setTimeout(() => {}, 3000);
     const isDataComplete =
       groupBy &&
       accountList &&

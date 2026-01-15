@@ -62,8 +62,10 @@ function Onboarding() {
     }
     
     if (!formValue.arnName.trim()) {
-      newErrors.arnName = "IAM Role ARN is required";
-    } 
+  newErrors.arnName = "IAM Role ARN is required";
+} else if (!formValue.arnName.trim().startsWith("arn:aws:iam::")) {
+  newErrors.arnName = "Enter a valid IAM Role ARN";
+}
     
     return newErrors;
   };

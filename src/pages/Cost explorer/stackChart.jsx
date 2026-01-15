@@ -9,24 +9,28 @@ import Loading from "../../commonComponent/Loading";
 import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
+import { emptyChartData } from "./cost";
 Charts(FusionCharts);
 FusionTheme(FusionCharts);
 
-
-function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selectedDate,loading,setLoading }) {
+function AwsCostStackedColumnChart({
+  selectedChart,
+  Allfilters,
+  setTable,
+  selectedDate,
+  loading,
+  setLoading,
+}) {
   const chartRef = useRef(null);
   const containerRef = useRef(null);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+  const toastShown = useRef(false);
   const [chartData, setChartData] = useState(null);
-  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const groupBy = queryParams.get("group");
-  const accountList=useSelector((state)=>state.accounts.value.accountsList);
-  
-
+  const accountList = useSelector((state) => state.accounts.value.accountsList);
 
   useEffect(() => {
     const resizeChart = () => {
@@ -44,39 +48,61 @@ function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selected
   }, []);
 
   useEffect(() => {
+    const isDataComplete =
+      groupBy &&
+      accountList &&
+      accountList.length > 0 &&
+      selectedDate?.startDate &&
+      selectedDate?.endDate;
+
+    if (selectedDate.startDate == null || selectedDate.endDate == null ) {
+      return;
+    }
+
+    if (!isDataComplete) {
+      if (!toastShown.current) {
+        toast.error("Please select atleast one account.");
+        toastShown.current = true;
+      }
+      setLoading(false);
+      return;
+    }
+    toastShown.current = false;
+
     const fetchData = async () => {
-      setTable([]);
-      setLoading(true);
-      setError(null);
-      
+      try {
+        setTable([]);
+        setLoading(true);
+        setError(null);
+
         const response = await PostCostExplorerData(groupBy, {
-          accountId:accountList,
+          accountId: accountList,
           startDate: selectedDate.startDate,
           endDate: selectedDate.endDate,
           filters: Allfilters,
         });
-     
+
         if (response.status === 200) {
-          const finalData = buildTooltipChartData(
-            response.data.chartData
-          );
+          const finalData = buildTooltipChartData(response.data.chartData);
           setChartData(finalData);
           setTable(response.data.tableData);
-          setLoading(false)
-        }else if(response.status===401){
-          console.log("the 401 error is this stackchart",response)
-          toast.error(response.response.data.message)
-          navigate("/")
-        } else if(response.status===400){
-          toast.error(response.response.data.message)
-                setTable([]);
-                setChartData(null);
-                 setLoading(false);
+        } else if (response.status === 401) {
+          toast.error(response.response.data.message);
+          navigate("/");
+        } else if (response.status === 400) {
+          toast.error(response.response.data.message);
+          setTable([]);
+          setChartData(emptyChartData);
         }
+      } catch (error) {
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
-  }, [groupBy, Allfilters,selectedDate,accountList]);
+  }, [groupBy, Allfilters, selectedDate, accountList]);
 
   if (loading) {
     return (
@@ -127,16 +153,12 @@ function AwsCostStackedColumnChart({ selectedChart, Allfilters,setTable,selected
 
 export default AwsCostStackedColumnChart;
 
-
 function buildTooltipChartData(chartData) {
   const categories = chartData.categories[0].category;
   const dataset = chartData.dataset;
 
   const totalsByIndex = categories.map((_, idx) =>
-    dataset.reduce(
-      (sum, s) => sum + Number(s.data[idx]?.value || 0),
-      0
-    )
+    dataset.reduce((sum, s) => sum + Number(s.data[idx]?.value || 0), 0)
   );
 
   const enhancedDataset = dataset.map((series, seriesIdx) => {
@@ -147,9 +169,7 @@ function buildTooltipChartData(chartData) {
       data: series.data.map((point, idx) => {
         const value = Number(point.value || 0);
         const total = totalsByIndex[idx];
-        const percent = total
-          ? ((value * 100) / total).toFixed(2)
-          : "0.00";
+        const percent = total ? ((value * 100) / total).toFixed(2) : "0.00";
 
         return {
           value: point.value,
@@ -157,8 +177,12 @@ function buildTooltipChartData(chartData) {
             <div class="fc-tooltip">
 
               
-              ${seriesIdx===0 ?`<div class="fc-tooltip-header">
-                ${categories[idx].label} </div>`:""}
+              ${
+                seriesIdx === 0
+                  ? `<div class="fc-tooltip-header">
+                ${categories[idx].label} </div>`
+                  : ""
+              }
 
               <!-- ROW -->
               <div class="fc-tooltip-row">

@@ -56,7 +56,8 @@ function Login() {
               lastName: response.data.userResponseDTO.lastName,
               email: response.data.userResponseDTO.email,
               role: response.data.userResponseDTO.role,
-            };
+            }
+           
             localStorage.setItem("userData", JSON.stringify(user));
             localStorage.setItem("token", JSON.stringify(response.data.jwt));
             dispatch(userChange(user));
@@ -67,6 +68,11 @@ function Login() {
             else{
               navigate("/dashboard/costExplorer?group=SERVICE");
             }
+          }
+          else{
+            
+            toast.error(response.message)
+            
           }
         }
   };
@@ -95,6 +101,7 @@ function Login() {
               placeholder="Business email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              maxLength={50}
             />
             {error.email && <div className="text-red-700 text-sm mt-1">{error.email}</div>}
 
@@ -110,6 +117,8 @@ function Login() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              maxLength={50}
+
             />
             {error.password && <div className="text-red-700 text-sm mt-1">{error.password}</div>}
           </form>

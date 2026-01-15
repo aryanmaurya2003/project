@@ -85,6 +85,7 @@ function UserForm() {
 
       if (response.status === 200 || response.status === 202) {
         toast.success(response.data.message);
+        navigate("/dashboard/user");
       } else if (response.status == 401) {
         
         navigate("/");
@@ -96,6 +97,7 @@ function UserForm() {
       }
     }
   };
+  console.log("the edit is this",isEdit)
 
   return (
     <div>
@@ -115,8 +117,10 @@ function UserForm() {
                   id={field.id}
                   type={field.type}
                   value={formData[field.name]}
+                  disabled={field.id == "email" &&isEdit}
                   name={field.name}
                   onChange={handleChange}
+                  maxLength={50}
                   placeholder={field.placeholder}
                   required={field.required}
                   className={`block ${

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllAccountList } from "../../API/account.api";
 import { toast } from "react-toastify";
 import Loading from "../../commonComponent/Loading";
+import { useSelector } from "react-redux";
 
 function EmptyList() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ function AccountListing() {
   const [accounts, setAccounts] = useState([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const userData = useSelector((state) => state.user.value.role);
   const handleClick = () => {
     navigate("/dashboard/onboard/add");
   };
@@ -58,7 +59,7 @@ function AccountListing() {
       } else if (responseData.status == 401) {
         setLoading(false);
         toast.error(responseData.response.data.message);
-        navigate("/")
+        navigate("/");
       }
     }
     fetchAccounts();
@@ -67,11 +68,10 @@ function AccountListing() {
   if (loading) {
     return (
       <div className="w-full h-200 bg-white grid place-content-center">
-       <Loading className="z-50 " />
+        <Loading className="z-50 " />
       </div>
     );
   }
-  
 
   return (
     <div className="w-[97%] m-auto">
@@ -84,16 +84,18 @@ function AccountListing() {
           </div>
         ) : (
           <div className="min-h-[60vh] ">
-            <div className="flex justify-end ">
-              {" "}
-              <button
-                className="bg-primary text-white hover:bg-white hover:text-primary hover:border hover:border-primary  w-[150px] h-[40px] flex justify-center items-center rounded-md"
-                onClick={handleClick}
-              >
+            {userData === "admin" && (
+              <div className="flex justify-end ">
                 {" "}
-                Link Account
-              </button>
-            </div>{" "}
+                <button
+                  className="bg-primary text-white hover:bg-white hover:text-primary hover:border hover:border-primary  w-[150px] h-[40px] flex justify-center items-center rounded-md"
+                  onClick={handleClick}
+                >
+                  {" "}
+                  Link Account
+                </button>
+              </div>
+            )}
             <table className="w-full border-collapse border border-gray-300 mt-3">
               <thead className="">
                 <tr className="bg-[#3a72e4]  text-white">
@@ -104,10 +106,10 @@ function AccountListing() {
                     AWS ID
                   </th>
                   <th className="border border-gray-300 px-4 py-1 text-left text-sm">
-                    ARN Name
+                    Account Name
                   </th>
                   <th className="border border-gray-300 px-4 py-1 text-left text-sm">
-                    Account Name
+                     ARN Name
                   </th>
                 </tr>
               </thead>

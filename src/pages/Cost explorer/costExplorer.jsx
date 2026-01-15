@@ -9,15 +9,16 @@ import { IoAnalyticsOutline } from "react-icons/io5";
 import { LuChartColumnStacked } from "react-icons/lu";
 import AwsCostStackedColumnChart from "./stackChart";
 import CostTable from "./CostTable";
-import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getColumnData } from "../../API/costExplorer";
 import {filters,arr} from "./cost";
 import { toast } from "react-toastify";
+import Loading from "../../commonComponent/Loading";
 
 
 function CostExplorer() {
   const [searchTerm, setSearchTerm] = useState("");
-
+const navigate=useNavigate();
   const [selectedFilter, setSelectedFilter] = useState(filters[0]);
   const [selectedSideFilter, setSelectedSideFilter] = useState({
     selected: false,
@@ -33,6 +34,7 @@ function CostExplorer() {
   const [Allfilters, setAllFilters] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [columnData, setColumnData] = useState([]);
+  const [columnDataLoading, setColumnDataLoading] = useState(false);
   const [selectedChart, setSelectedChart] = useState(arr[0]);
   const dropdownRef = useRef(null);
   const datedownRef = useRef(null);
@@ -74,22 +76,41 @@ function CostExplorer() {
     setSelectedFilters([]);
     setAllFilters([]);
     setTable([]);
+    
+    setColumnDataLoading(true);
     const response = await getColumnData(filter.value);
+
     if (response.status == 200) {
       setColumnData(response.data.filters);
     } else if (response.status == 401) {
-      console.log("the 401 error is this cost explorer",response)
       toast.error(response.response.data.message)
      navigate("/")
     } 
-    else{
+    else if(response.status==400){
       toast.error(response.data.message)
     }
+    setColumnDataLoading(false);
   };
 
   const handleSubmitFilter = () => {
     setAllFilters(selectedFilters);
   };
+  const handleNavigateClick=(filter )=>{
+    setSelectedFilter(filter)
+    setTable([])
+    navigate(`/dashboard/costExplorer?group=${filter.value}`)
+  }
+
+  const handleResetClick = (filter) => {
+      setSelectedSideFilter({
+      selected: !selectedSideFilter.selected,
+      id: selectedSideFilter.id,
+    });
+    setSelectedFilters([]);
+    setAllFilters([]);
+    setTable([]);
+    navigate(`/dashboard/costExplorer?group=SERVICE`)
+  }
 
   return (
     <div className="pt-5 ml-3 space-y-1 z-10">
@@ -113,13 +134,13 @@ function CostExplorer() {
                 <div
                   key={filter.id}
                   className="ml-3 min-w-20 px-2 bg-slate-200 hover:bg-blue-800 hover:text-white text-blue-800 text-[12px] h-full flex items-center justify-center rounded-md cursor-pointer ease-in-out duration-200  "
-                  onClick={() => {setSelectedFilter(filter),setTable([])
-                  }}
+                  // onClick={() => {setSelectedFilter(filter),setTable([])
+                  // }}
+                  onClick={()=>handleNavigateClick(filter)}
                 >
-                  <Link to={`/dashboard/costExplorer?group=${filter.value}`}>
-                    {" "}
+                  {/* <Link to={`/dashboard/costExplorer?group=${filter.value}`}> */}
                     {filter.name}{" "}
-                  </Link>
+                  {/* </Link> */}
                 </div>
               ))}
             <div className="relative mt-[3px]" ref={dropdownRef}>
@@ -149,14 +170,9 @@ function CostExplorer() {
                     <div
                       key={filter.id}
                       className="ml-3 min-w-20   text-[13px] h-full font-light mt-3  rounded-md cursor-pointer ease-in-out duration-200"
-                      onClick={() => {
-                        setSelectedFilter(filter), setTable([])
-                      }}
+                      onClick={()=>handleNavigateClick(filter)}
                     >
-                      <Link
-                        to={`/dashboard/costExplorer?group=${filter.value}`}>
                         {filter.name}
-                      </Link>
                     </div>
                   ))}
               </div>
@@ -266,7 +282,7 @@ function CostExplorer() {
               <div>Filter</div>
               <div
                 className="text-blue-800 font-semibold hover:cursor-pointer flex"
-                onClick={() => window.location.reload}
+                onClick={handleResetClick}
               >
                 Reset <RxReload className="rotate-90 ml-2 mt-1 " />
               </div>
@@ -334,92 +350,100 @@ function CostExplorer() {
                       } results`}
                     </div>
                     <div className=" h-60 overflow-auto ">
-                      <div className="w-full mt-2 flex items-center border-b border-gray-200 pb-2 mb-2">
-                        <input
-                          type="checkbox"
-                          id="selectAll"
-                          checked={
-                            selectedFilters.length ===
-                              columnData.filter((item) =>
-                                item
-                                  .toLowerCase()
-                                  .includes(searchTerm.toLowerCase())
-                              ).length &&
-                            columnData.filter((item) =>
-                              item
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                            ).length > 0
-                          }
-                          onChange={(e) => {
-                            const filteredData = columnData.filter((item) =>
-                              item
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                            );
-                            if (e.target.checked) {
-                              setSelectedFilters([
-                                ...new Set([
-                                  ...selectedFilters,
-                                  ...filteredData,
-                                ]),
-                              ]);
-                            } else {
-                              setSelectedFilters(
-                                selectedFilters.filter(
-                                  (filter) => !filteredData.includes(filter)
-                                )
-                              );
-                            }
-                          }}
-                          className="border-2 w-3 h-3"
-                        />
-                        <label
-                          htmlFor="selectAll"
-                          className="text-[12px] ml-2 cursor-pointer font-semibold"
-                        >
-                          Select All
-                        </label>
-                      </div>
-
-                      {columnData
-                        .filter((item) =>
-                          item.toLowerCase().includes(searchTerm.toLowerCase())
-                        )
-                        .map((items, index) => (
-                          <div
-                            className={`w-full mt-2 flex items-center `}
-                            key={index}
-                          >
+                      {columnDataLoading ? (
+                        <div className="flex justify-center items-center h-full">
+                          <Loading />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="w-full mt-2 flex items-center border-b border-gray-200 pb-2 mb-2">
                             <input
                               type="checkbox"
-                              id={index}
-                              name={items}
-                              checked={selectedFilters.includes(items)}
+                              id="selectAll"
+                              checked={
+                                selectedFilters.length ===
+                                  columnData.filter((item) =>
+                                    item
+                                      .toLowerCase()
+                                      .includes(searchTerm.toLowerCase())
+                                  ).length &&
+                                columnData.filter((item) =>
+                                  item
+                                    .toLowerCase()
+                                    .includes(searchTerm.toLowerCase())
+                                ).length > 0
+                              }
                               onChange={(e) => {
+                                const filteredData = columnData.filter((item) =>
+                                  item
+                                    .toLowerCase()
+                                    .includes(searchTerm.toLowerCase())
+                                );
                                 if (e.target.checked) {
                                   setSelectedFilters([
-                                    ...selectedFilters,
-                                    items,
+                                    ...new Set([
+                                      ...selectedFilters,
+                                      ...filteredData,
+                                    ]),
                                   ]);
                                 } else {
                                   setSelectedFilters(
                                     selectedFilters.filter(
-                                      (filter) => filter !== items
+                                      (filter) => !filteredData.includes(filter)
                                     )
                                   );
                                 }
                               }}
-                              className=" border-2 w-3 h-3"
+                              className="border-2 w-3 h-3"
                             />
                             <label
-                              htmlFor={index}
-                              className="text-[12px] ml-2 cursor-pointer"
+                              htmlFor="selectAll"
+                              className="text-[12px] ml-2 cursor-pointer font-semibold"
                             >
-                              {items}
+                              Select All
                             </label>
                           </div>
-                        ))}
+
+                          {columnData
+                            .filter((item) =>
+                              item.toLowerCase().includes(searchTerm.toLowerCase())
+                            )
+                            .map((items, index) => (
+                              <div
+                                className={`w-full mt-2 flex items-center `}
+                                key={index}
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={index}
+                                  name={items}
+                                  checked={selectedFilters.includes(items)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setSelectedFilters([
+                                        ...selectedFilters,
+                                        items,
+                                      ]);
+                                    } else {
+                                      setSelectedFilters(
+                                        selectedFilters.filter(
+                                          (filter) => filter !== items
+                                        )
+                                      );
+                                    }
+                                  }}
+                                  className=" border-2 w-3 h-3"
+                                />
+                                <label
+                                  htmlFor={index}
+                                  className="text-[12px] ml-2 cursor-pointer"
+                                >
+                                  {items}
+                                </label>
+                              </div>
+                            ))}
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="border-b border-slate-300"></div>

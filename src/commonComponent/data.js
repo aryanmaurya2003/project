@@ -183,4 +183,16 @@ const asgData = [
 ];
 
 
-export { ec2data, rdsData, asgData };
+
+const onboardRestrictRole=[
+    { role: "customer", url: "/dashboard/costExplorer?group=SERVICE" },
+    { role: "read_Only", url: "/dashboard/onboard" }
+  ];
+const userRestrictRole=[
+    { role: "customer", url: "/dashboard/costExplorer?group=SERVICE" },
+    { role: "read_Only", url: "/dashboard/user" }
+  ];
+const customerRestrict=[
+    { role: "customer", url: "/dashboard/costExplorer?group=SERVICE" }
+  ];
+export { ec2data, rdsData, asgData, onboardRestrictRole ,userRestrictRole,customerRestrict};

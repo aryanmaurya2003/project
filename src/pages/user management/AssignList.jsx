@@ -122,17 +122,21 @@ function AssignList({ setAssignedAccounts, userid }) {
 
   const moveToRight = () => {
     const itemsToMove = data.filter((item) => selectedLeft.has(item.id));
+    const newData = data.filter((item) => !selectedLeft.has(item.id));
     const newAssignedItems = [...assignedItems, ...itemsToMove];
+    setData(newData);
     setAssignedItems(newAssignedItems);
     setAssignedAccounts(newAssignedItems.map((e) => e.id));
     setSelectedLeft(new Set());
   };
 
   const moveToLeft = () => {
-    const itemsToRemove = new Set(selectedRight);
+    const itemsToMove = assignedItems.filter((item) => selectedRight.has(item.id));
     const newAssignedItems = assignedItems.filter(
-      (item) => !itemsToRemove.has(item.id)
+      (item) => !selectedRight.has(item.id)
     );
+    const newData = [...data, ...itemsToMove];
+    setData(newData);
     setAssignedItems(newAssignedItems);
     setAssignedAccounts(newAssignedItems.map((e) => e.id));
     setSelectedRight(new Set());

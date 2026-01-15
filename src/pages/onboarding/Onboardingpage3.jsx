@@ -127,7 +127,7 @@ function Onboardingpage3() {
                   <img
                     src={step.image}
                     alt={step.alt}
-                    className="max-h-[250px] w-full"
+                    className="max-h-[750px] w-full"
                   />
                 </div>
               )}

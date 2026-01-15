@@ -8,76 +8,21 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Link, useNavigate } from "react-router-dom";
+import { data, Link, useNavigate } from "react-router-dom";
 import { IoIosAdd } from "react-icons/io";
-import { CiFilter } from "react-icons/ci";
-import { RiExpandUpDownFill } from "react-icons/ri";
 import { getAllUsers } from "../../API/User.api";
-import ThreeDotLoader from "../../commonComponent/Loading";
-import { deleteUser } from "../../API/User.api";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import Loading from "../../commonComponent/Loading";
+import { columns } from "./userData";
 
-const columns = [
-  {
-    id: "firstName",
-    label: "First dddName",
-    symbol: (
-      <div className="flex gap-2">
-        <CiFilter className="scale-150" />
-        <RiExpandUpDownFill />
-      </div>
-    ),
-    minWidth: 60,
-  },
-  {
-    id: "lastName",
-    label: "Lastddd Name",
-    symbol: (
-      <div className="flex gap-2">
-        <CiFilter className="scale-150" />
-        <RiExpandUpDownFill />
-      </div>
-    ),
-    minWidth: 60,
-  },
-  {
-    id: "email",
-    label: "Email",
-    symbol: (
-      <div className="flex gap-2">
-        <CiFilter className="scale-150" />
-        <RiExpandUpDownFill />
-      </div>
-    ),
-    minWidth: 150,
-  },
-  {
-    id: "role",
-    label: "Role",
-    symbol: (
-      <div className="flex gap-2">
-        <CiFilter className="scale-150" />
-      </div>
-    ),
-    minWidth: 60,
-  },
-  { id: "action", label: "Action", minWidth: 60, align: "center" },
-];
+
 
 export default function UserListing() {
   const [rows, setRowsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const data = useSelector((state) => state.user.value.role);
-
-  useEffect(() => {
-  if (data === "customer") {
-    navigate("/dashboard/costExplorer?group=API_OPERATION");
-  }
-}, [data, navigate]);
+  const role = useSelector((state) => state.user.value.role);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -90,28 +35,17 @@ export default function UserListing() {
         }
         else if(response.status==401){
           toast.error(response.response.data.message)
-        localStorage.removeItem("token")
-        localStorage.removeItem("userAuthenticated")
-        localStorage.removeItem("userData")
+       
           navigate("/")
         }
      
     }
     fetchUsers();
   }, []);
+  data
 
   const handleEdit = (row) => console.log("Edit:", row);
-  const handleDelete = async (row) => {
-    console.log("Delete:", row.id);
-    const response = await deleteUser(row.id);
-    console.log("Delete response:", response);
-    if (response.status === 200) {
-      setRowsData((rows) => rows.filter((e) => e.id !== row.id));
-      toast.success(response.data.message);
-    } else {
-      toast.error(response.error.message);
-    }
-  };
+ 
   if(loading){
    return<div className="w-full h-screen grid place-content-center"> <Loading className="z-50 "/></div>
   }
@@ -131,24 +65,24 @@ export default function UserListing() {
           overflowY: "auto",
         }}
       >
-        <div className="flex justify-between h-[45px] ">
+        {role === "admin" && ( <div className="flex justify-between h-[45px] ">
           <div className="flex  gap-2  ">
-            <div
-              className={`border text-white bg-black w-40  font-bold rounded-md ${
-                data != "admin" ? "hidden" : ""
-              }`}
-            >
-              <Link
-                to={"/dashboard/user/addUser"}
-                className={`w-full h-full   flex justify-center items-center gap-2 `}
+           
+              <div
+                className={`border text-white bg-black w-40  font-bold rounded-md `}
               >
-                <IoIosAdd className="text-w hite font-extrabold scale-200" />
-                Add New User
-              </Link>
-            </div>
+                <Link
+                  to={"/dashboard/user/addUser"}
+                  className={`w-full h-full   flex justify-center items-center gap-2 `}
+                >
+                  <IoIosAdd className="text-white font-extrabold scale-200" />
+                  Add New User
+                </Link>
+              </div>
+           
           </div>
          
-        </div>
+        </div> )}
         <TableContainer
           sx={{
             maxHeight: 880,
@@ -162,7 +96,7 @@ export default function UserListing() {
             <TableHead sx={{ backgroundColor: "#e8f1ff" }}>
               <TableRow sx={{ position: "sticky", top: 0, zIndex: 9 }}>
                 {columns.map((column) => {
-                  if (column.id === "action" && data !== "admin") {
+                  if (column.id === "action" && role !== "admin") {
                     return null;
                   }
                   return (
@@ -195,14 +129,13 @@ export default function UserListing() {
                   }}
                 >
                   {columns.map((column) => {
-                    // Skip action column for non-admin users
-                    if (column.id === "action" && data !== "admin") {
+                    if (column.id === "action" && role !== "admin") {
                       return null;
                     }
 
                     const value = row[column.id];
 
-                    if (column.id === "action" && data === "admin") {
+                    if (column.id === "action" && role === "admin") {
                       return (
                         <TableCell key={column.id}>
                           <Link to={"/dashboard/user/editUser"} state={{ row }}>
@@ -214,12 +147,7 @@ export default function UserListing() {
                             </IconButton>
                           </Link>
 
-                          <IconButton
-                            color="error"
-                            onClick={() => handleDelete(row)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+                          
                         </TableCell>
                       );
                     }

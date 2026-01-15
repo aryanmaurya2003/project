@@ -1,4 +1,14 @@
 import iamRole from "../../assets/iamrole.png";
+import image1 from "../../assets/image12.png";
+import image2 from "../../assets/image13.png";
+import image3 from "../../assets/image14.png";
+import image4 from "../../assets/image15.png";
+import image5 from "../../assets/image16.png";
+import image6 from "../../assets/image17.png";
+import image7 from "../../assets/image18.png";
+
+
+
 const onboardingSteps = [
   {
     id: 1,
@@ -126,21 +136,21 @@ const onboardingSteps = [
       { type: "text", value: "Go to " },
       { type: "link", value: "CK-Tuner-Role ", link: "#" },
     ],
-    image: iamRole,
+    image: image1,
     alt: "Error in loading image",
   },
   {
     id: 11,
     description:
       "In permissioin policies, Click on Add permision > Attack Policies",
-    image: iamRole,
+    image: image2,
     alt: "Error in loading image",
   },
   {
     id: 12,
     description:
       "Filter by type > Customer managed then search for cktuner-costAuditPolicy,ckTuner-SecAuditPolicy,cktuner-TunerReadEssential and select them",
-    image: iamRole,
+    image: image3,
     alt: "Error in loading image",
   },
   {
@@ -156,7 +166,7 @@ const onboardingSteps = [
       { type: "text", value: "In permission Policies, Click on " },
       { type: "text", value: " Add Permission > Create Inline Policy " },
     ],
-    image: iamRole,
+    image: image4,
     alt: "Error in loading image",
   },
   {
@@ -250,7 +260,7 @@ const onboardingSteps1 = [
   {
     id: 5,
     description: "Go to the newely created IAM role and copy the Role ARN- ",
-    image: iamRole,
+    image: image1,
     alt: "Error in loading image",
   },
   {id: 6,
@@ -285,7 +295,6 @@ const onboardingSteps3 = [
       { type: "link", value: "S3 Console ", link: "#" },
       { type: "text", value: "and click Create bucket" },
     ],
-    image: iamRole,
     alt: "S3 Console Screenshot",
   },
   {
@@ -296,51 +305,26 @@ const onboardingSteps3 = [
   },
   {
     id: 3,
-    description: "Configure bucket settings with the following JSON policy:",
-    codeBlock: `{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowCloudKeeperAccess",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::951485052809:root"
-      },
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject"
-      ],
-      "Resource": "arn:aws:s3:::your-bucket-name/*"
-    }
-  ]
-}`,
-  },
-  {
-    id: 4,
-    description: "Enable versioning and server-side encryption for the bucket.",
-    image: iamRole,
+    description: " Name the report as shown below and select the Include resource IDs checkbox -",
+    image: image5,
     alt: "Bucket settings screenshot",
   },
+ 
   {
-    id: 5,
-    description: [
-      { type: "text", value: "Click " },
-      { type: "text", value: "Create bucket " },
-      { type: "text", value: "to complete the setup" },
-    ],
-  },
-  {
-    id: 6,
-    description: "Copy the bucket ARN from the bucket properties:",
-    image: iamRole,
+    id: 4,
+    description: "In Configure S3 Bucket, provide the name of the S3 bucket that was created -",
+    image: image6,
     alt: "Bucket ARN location",
   },
   {
-    id: 7,
-    description: "Verify bucket access by uploading a test file.",
-    image: iamRole,
+    id: 5,
+    description: "In the Delivery options section, enter the below-mentioned Report path prefix -",
+    image: image7,
     alt: "Upload test file",
+  },
+    {
+    id: 6,
+    description: " Click on Next. Now, review the configuration of the Cost and Usage Report. Once satisfied, click on Create Report.",
   },
 ];
 

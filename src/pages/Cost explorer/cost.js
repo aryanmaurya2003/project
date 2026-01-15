@@ -15,4 +15,21 @@ const filters = [
 ];
 const arr = ["mscolumn2d", "msline", "stackedcolumn2d"];
 
-export { filters ,arr};
+
+const emptyChartData = {
+  chart: {
+    caption: "",
+    subCaption: "",
+    xAxisName: "",
+    yAxisName: "",
+    numberPrefix: "$",
+    theme: "fusion",
+    showValues: "0"
+  },
+  categories: [{
+    category: []
+  }],
+  dataset: []
+};
+
+export { filters ,arr ,emptyChartData};

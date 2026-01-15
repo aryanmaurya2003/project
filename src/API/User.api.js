@@ -38,22 +38,7 @@ export const updateUser = async (data) => {
     }
 }
 
-export const deleteUser = async (id) => {
-    try {
-        console.log("----------------")
-        const userdata = { id: id }
-        console.log("the data is this:", userdata);
 
-        const response = await app.delete('/user/delete', {
-            data: userdata
-        });
-        console.log("API Response:", response);
-        return response;
-    } catch (error) {
-        return { error: error }
-    }
-
-}
 
 
 export const AssigendAccounts = async (data) => {

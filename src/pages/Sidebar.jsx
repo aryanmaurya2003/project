@@ -31,13 +31,7 @@ const SideElement = [
     link: "/dashboard/costExplorer?group=SERVICE",
     role: ["admin", "read_Only", "customer"],
   },
-  {
-    id: "aws",
-    name: "Aws Service",
-    icon: <FaAws className=" inline w-6 h-6 " />,
-    link: "/dashboard/aws",
-    role: ["admin", "read_Only", "customer"],
-  },
+  
 ];
 
 function Sidebar() {

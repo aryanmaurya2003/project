@@ -17,6 +17,7 @@ function NavBar() {
   const [accoutList, setAccountList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
   console.log(selectedAccounts);
   const dropdownRef = useRef(null);
 
@@ -43,11 +44,9 @@ function NavBar() {
   }, [isOpen]);
   const fetchAccounts = async () => {
     try {
-      dispatch(LoaderChange());
+      setIsLoadingAccounts(true);
       const response = await getAllAccountList();
       if (response.status === 200) {
-        dispatch(LoaderChange());
-
         if (response.data.accounts.length > 0) {
           setSelectedAccounts([response.data.accounts[0].aws_ID]);
           dispatch(accountsChange([response.data.accounts[0].aws_ID]));
@@ -55,11 +54,12 @@ function NavBar() {
         console.log(response.data.accounts);
         setAccountList(response.data.accounts);
       } else if (response.status === 401) {
-        dispatch(LoaderChange());
         navigate("/");
       }
     } catch (error) {
       console.error("Error fetching account list:", error);
+    } finally {
+      setIsLoadingAccounts(false);
     }
   };
 
@@ -68,27 +68,27 @@ function NavBar() {
   }, []);
 
   const value = useSelector((state) => state.user.value);
-  //   console.log("the value is this ", value);
 
- const handleLogout = async (e) => {
-  e.preventDefault(); // Prevent default browser behavior
-  e.stopPropagation(); // Stop event bubbling
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const response = await logoutApi();
+    const response = await logoutApi();
 
-  if(response.status === 200){
-    toast.success("Logout successful");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userAuthenticated");
-    localStorage.removeItem("userData");
-    navigate("/");
-  } else {
-    toast.error("Error in logout");
-  }
-};
+    if (response.status === 200) {
+      toast.success("Logout successful");
+      localStorage.removeItem("token");
+      localStorage.removeItem("userAuthenticated");
+      localStorage.removeItem("userData");
+      navigate("/");
+    } else if (response.status === 401) {
+      navigate("/");
+    } else {
+      toast.error("Error in logout");
+    }
+  };
 
   const handleOpenAccount = () => {
-    // fetchAccounts();
     setIsOpen(!isOpen);
   };
   const handleAddAccount = (id) => {
@@ -124,16 +124,17 @@ function NavBar() {
 
           {isOpen && (
             <div
-              className="absolute top-17 ml-16 bg-white w-64  border-2 min-h-80 z-30"
+              className="absolute top-17 ml-16 bg-white w-64  border-2 min-h-10 z-30"
               ref={dropdownRef}
             >
               <div className="border-b border-slate-300 p-3 font-bold">
                 Accounts
               </div>
               <div className="max-h-70 overflow-y-auto overflow-x-hidden ">
-                {accoutList ? (
+                {isLoadingAccounts ? (
+                  <Loading className="z-50 " />
+                ) : (
                   accoutList.map((account) => (
-                    // <div key={account.aws_ID} className='p-3 hover:bg-blue-100 hover:cursor-pointer '>{account.accountName}</div>
                     <div
                       key={account.aws_ID}
                       className="p-3 hover:bg-blue-100 hover:cursor-pointer  flex"
@@ -146,8 +147,6 @@ function NavBar() {
                       <div className="ml-2">{account.aws_ID}</div>
                     </div>
                   ))
-                ) : (
-                  <Loading className="z-50 " />
                 )}
               </div>
               <hr />
@@ -167,7 +166,9 @@ function NavBar() {
           <div className="border-r border-slate-300">
             <div className="text-[12px]">Welcome,</div>
             <div className="font-bold text-blue-800 mr-5">
-              {value.firstName + " " + value.lastName}
+              {value.firstName && value.lastName
+                ? value.firstName + " " + value.lastName
+                : "User"}
               <LuInfo className="inline-block scale-110 ml-1 " />
             </div>
           </div>

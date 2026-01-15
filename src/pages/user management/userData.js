@@ -39,8 +39,33 @@ const roleOptions = {
   ],
 };
 
+const columns = [
+  {
+    id: "firstName",
+    label: "First Name",
+    minWidth: 60,
+  },
+  {
+    id: "lastName",
+    label: "Last Name",
+    minWidth: 60,
+  },
+  {
+    id: "email",
+    label: "Email",
+    minWidth: 150,
+  },
+  {
+    id: "role",
+    label: "Role",
+    minWidth: 60,
+  },
+  { id: "action", label: "Action", minWidth: 60, align: "center" },
+];
 
 
 
 
-export { formFields, roleOptions };
+
+
+export { formFields, roleOptions, columns };
